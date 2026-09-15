@@ -1,74 +1,681 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Valorant Mini Game</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      background: #0f1923;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(15, 25, 35, 0.92), rgba(15, 25, 35, 0.96)),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 80px,
+          rgba(255,255,255,0.02) 81px
+        );
+
       color: white;
-      font-family: Arial, sans-serif;
-      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
+
+      overflow: hidden;
     }
 
-    .container {
-      border: 2px solid #ff4655;
-      padding: 50px;
-      width: 500px;
-      background: #111820;
+    /* moving red glow */
+    body::before {
+      content: "";
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: #ff4655;
+      filter: blur(180px);
+      opacity: 0.08;
+      top: -100px;
+      left: -100px;
+      animation: moveGlow 7s infinite alternate;
     }
+
+    @keyframes moveGlow {
+      from {
+        transform: translate(0, 0);
+      }
+
+      to {
+        transform: translate(300px, 150px);
+      }
+    }
+
+
+    .screen {
+      display: none;
+      width: 90%;
+      max-width: 700px;
+
+      border: 1px solid #ff4655;
+
+      background: rgba(10, 18, 26, 0.96);
+
+      padding: 50px;
+
+      box-shadow:
+        0 0 40px rgba(255, 70, 85, 0.15);
+
+      position: relative;
+
+      animation: fadeIn 0.5s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    .classified {
+      color: #ff4655;
+      font-size: 12px;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
 
     h1 {
-      color: #ff4655;
-      letter-spacing: 4px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+      font-size: 42px;
+      letter-spacing: 5px;
+
+      color: white;
     }
+
+
+    .red {
+      color: #ff4655;
+    }
+
+
+    .line {
+      height: 2px;
+      width: 100%;
+      background: #ff4655;
+      margin: 25px 0;
+      opacity: 0.5;
+    }
+
 
     .status {
-      color: #9aa0a6;
-      margin: 25px 0;
-      line-height: 1.8;
+      color: #aab3bb;
+      line-height: 2;
+      letter-spacing: 1px;
+      font-size: 15px;
     }
 
+
+    .status strong {
+      color: white;
+    }
+
+
+    .lost {
+      color: #ff4655;
+    }
+
+
     button {
+      margin-top: 30px;
+
       background: #ff4655;
       color: white;
+
       border: none;
-      padding: 15px 35px;
-      font-size: 18px;
+
+      padding: 16px 35px;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      letter-spacing: 2px;
+
       cursor: pointer;
+
+      transition: 0.25s;
     }
+
 
     button:hover {
       background: white;
       color: #ff4655;
+
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 0 25px rgba(255, 70, 85, 0.4);
     }
+
+
+    .mission-number {
+      color: #8b949c;
+      letter-spacing: 4px;
+      font-size: 12px;
+    }
+
+
+    .mission-title {
+      color: #ff4655;
+
+      font-size: 34px;
+
+      margin-top: 10px;
+    }
+
+
+    .objective-box {
+      border-left: 3px solid #ff4655;
+
+      padding: 15px 20px;
+
+      margin-top: 25px;
+
+      background: rgba(255,255,255,0.03);
+
+      line-height: 1.7;
+    }
+
+
+    .loading-bar {
+      width: 100%;
+      height: 6px;
+
+      background: #27323b;
+
+      margin-top: 25px;
+
+      overflow: hidden;
+    }
+
+
+    .loading {
+      width: 0%;
+      height: 100%;
+
+      background: #ff4655;
+
+      transition: width 2s;
+    }
+
+
+    #scanResult {
+      display: none;
+
+      margin-top: 30px;
+
+      border: 1px solid #ff4655;
+
+      padding: 25px;
+
+      background: rgba(255, 70, 85, 0.05);
+
+      animation: fadeIn 0.8s;
+    }
+
+
+    .memory-title {
+      color: #ff4655;
+      letter-spacing: 3px;
+      font-size: 13px;
+    }
+
+
+    .memory-text {
+      margin-top: 15px;
+
+      font-size: 18px;
+
+      line-height: 1.7;
+    }
+
+
+    .corner {
+      position: absolute;
+
+      width: 20px;
+      height: 20px;
+
+      border-color: #ff4655;
+    }
+
+
+    .top-left {
+      top: -1px;
+      left: -1px;
+
+      border-top: 4px solid #ff4655;
+      border-left: 4px solid #ff4655;
+    }
+
+
+    .bottom-right {
+      bottom: -1px;
+      right: -1px;
+
+      border-bottom: 4px solid #ff4655;
+      border-right: 4px solid #ff4655;
+    }
+
+
+    .tiny {
+      margin-top: 25px;
+
+      color: #69737c;
+
+      font-size: 11px;
+
+      letter-spacing: 2px;
+    }
+
+
+    @media (max-width: 600px) {
+
+      .screen {
+        padding: 30px 22px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .mission-title {
+        font-size: 27px;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <div class="container">
 
-    <p>CLASSIFIED // SPECIAL OPERATION</p>
+<!-- ========================= -->
+<!-- SCREEN 1 -->
+<!-- ========================= -->
 
-    <h1>MISSION AVAILABLE</h1>
+<div class="screen active" id="screen1">
 
-    <div class="status">
-      PLAYER 1: FOUND<br>
-      PLAYER 2: CONNECTION LOST<br><br>
+  <div class="corner top-left"></div>
+  <div class="corner bottom-right"></div>
 
-      OBJECTIVE:<br>
-      FIND PLAYER 2
-    </div>
+  <div class="classified">
+    CLASSIFIED // SPECIAL OPERATION
+  </div>
 
-    <button>ACCEPT MISSION</button>
+  <h1>
+    MISSION <span class="red">AVAILABLE</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="status">
+
+    <strong>PLAYER 1:</strong>
+    FOUND
+
+    <br>
+
+    <strong>PLAYER 2:</strong>
+    <span class="lost">
+      CONNECTION LOST
+    </span>
+
+    <br><br>
+
+    <strong>OBJECTIVE:</strong>
+
+    <br>
+
+    FIND PLAYER 2
 
   </div>
+
+  <button onclick="acceptMission()">
+    ACCEPT MISSION
+  </button>
+
+  <div class="tiny">
+    CONNECTION ID // 001
+  </div>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- SCREEN 2 -->
+<!-- ========================= -->
+
+<div class="screen" id="screen2">
+
+  <div class="corner top-left"></div>
+  <div class="corner bottom-right"></div>
+
+  <div class="classified">
+    CONNECTION ESTABLISHED
+  </div>
+
+  <h1>
+    MISSION <span class="red">BRIEFING</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="status">
+
+    Searching archived connection data...
+
+    <br><br>
+
+    <strong>FIRST CONNECTION:</strong>
+    DETECTED
+
+    <br>
+
+    <strong>SOURCE:</strong>
+    VALORANT MATCH
+
+    <br>
+
+    <strong>STATUS:</strong>
+    MEMORY FILES AVAILABLE
+
+  </div>
+
+  <div class="objective-box">
+
+    <strong>MISSION:</strong>
+
+    <br>
+
+    Return to where everything started.
+
+    <br><br>
+
+    Locate the first connection between
+    Player 1 and Player 2.
+
+  </div>
+
+  <button onclick="startMissionOne()">
+    BEGIN MISSION 01
+  </button>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- SCREEN 3 -->
+<!-- ========================= -->
+
+<div class="screen" id="screen3">
+
+  <div class="corner top-left"></div>
+  <div class="corner bottom-right"></div>
+
+  <div class="mission-number">
+    MISSION // 01
+  </div>
+
+  <div class="mission-title">
+    THE MATCH
+  </div>
+
+  <div class="line"></div>
+
+  <div class="status">
+
+    LOCATION:
+
+    <strong>UNKNOWN VALORANT SERVER</strong>
+
+    <br>
+
+    PLAYERS DETECTED:
+
+    <strong>2</strong>
+
+    <br>
+
+    CONNECTION STATUS:
+
+    <strong class="red">UNSTABLE</strong>
+
+  </div>
+
+
+  <div class="objective-box">
+
+    <strong>OBJECTIVE</strong>
+
+    <br><br>
+
+    Scan the archived match data
+    and locate the first memory.
+
+  </div>
+
+
+  <button onclick="scanMemory()">
+    SCAN MATCH DATA
+  </button>
+
+
+  <div class="loading-bar">
+
+    <div class="loading" id="loadingBar"></div>
+
+  </div>
+
+
+
+  <div id="scanResult">
+
+    <div class="memory-title">
+      MEMORY UNLOCKED
+    </div>
+
+    <div class="memory-text">
+
+      Two random players entered the same match.
+
+      <br><br>
+
+      Neither of them knew that this game
+      would be the beginning of something
+      much bigger.
+
+      <br><br>
+
+      <span class="red">
+        CONNECTION CREATED.
+      </span>
+
+    </div>
+
+    <button onclick="nextMission()">
+      CONTINUE
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- SCREEN 4 -->
+<!-- ========================= -->
+
+<div class="screen" id="screen4">
+
+  <div class="corner top-left"></div>
+  <div class="corner bottom-right"></div>
+
+  <div class="classified">
+    MEMORY ARCHIVE
+  </div>
+
+  <h1>
+    MISSION 01 <span class="red">COMPLETE</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="status">
+
+    FIRST CONNECTION:
+
+    <strong>RECOVERED</strong>
+
+    <br><br>
+
+    PLAYER 1:
+
+    <strong>CONNECTED</strong>
+
+    <br>
+
+    PLAYER 2:
+
+    <strong>CONNECTED</strong>
+
+  </div>
+
+
+  <div class="objective-box">
+
+    MORE MEMORY FILES HAVE BEEN DETECTED.
+
+    <br><br>
+
+    Mission 02 will become available soon.
+
+  </div>
+
+
+  <button onclick="restartGame()">
+    REPLAY MISSION
+  </button>
+
+</div>
+
+
+
+<script>
+
+  function showScreen(screenNumber) {
+
+    const screens =
+      document.querySelectorAll(".screen");
+
+    screens.forEach(function(screen) {
+
+      screen.classList.remove("active");
+
+    });
+
+
+    document
+      .getElementById("screen" + screenNumber)
+      .classList.add("active");
+
+  }
+
+
+
+  function acceptMission() {
+
+    showScreen(2);
+
+  }
+
+
+
+  function startMissionOne() {
+
+    showScreen(3);
+
+  }
+
+
+
+  function scanMemory() {
+
+    const bar =
+      document.getElementById("loadingBar");
+
+    const result =
+      document.getElementById("scanResult");
+
+
+    bar.style.width = "100%";
+
+
+    setTimeout(function() {
+
+      result.style.display = "block";
+
+    }, 2100);
+
+  }
+
+
+
+  function nextMission() {
+
+    showScreen(4);
+
+  }
+
+
+
+  function restartGame() {
+
+    document.getElementById("loadingBar")
+      .style.width = "0%";
+
+    document.getElementById("scanResult")
+      .style.display = "none";
+
+    showScreen(1);
+
+  }
+
+</script>
+
 
 </body>
 </html>
