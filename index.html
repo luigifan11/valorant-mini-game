@@ -31,7 +31,7 @@
       display: none;
 
       width: 90%;
-      max-width: 650px;
+      max-width: 700px;
 
       background: #111820;
 
@@ -40,6 +40,8 @@
       padding: 45px;
 
       box-shadow: 0 0 40px rgba(255, 70, 85, 0.15);
+
+      margin: 30px 0;
     }
 
     .screen.active {
@@ -56,6 +58,10 @@
       letter-spacing: 4px;
       font-size: 38px;
       margin: 15px 0;
+    }
+
+    h2 {
+      letter-spacing: 3px;
     }
 
     .red {
@@ -83,15 +89,10 @@
 
     .objective {
       margin-top: 25px;
-
       padding: 20px;
-
       background: rgba(255,255,255,0.03);
-
       border-left: 3px solid #ff4655;
-
       line-height: 1.7;
-
       text-align: left;
     }
 
@@ -111,53 +112,47 @@
       letter-spacing: 2px;
 
       cursor: pointer;
+
+      transition: 0.2s;
     }
 
     button:hover {
       background: white;
       color: #ff4655;
+      transform: translateY(-2px);
     }
 
     .loading-container {
       width: 100%;
-
       height: 8px;
-
       background: #27323b;
-
       margin-top: 30px;
-
       display: none;
     }
 
     .loading-bar {
       width: 0%;
       height: 100%;
-
       background: #ff4655;
-
       transition: width 2.5s;
     }
 
-    #memoryResult {
+    #memoryResult,
+    #archiveResult {
       display: none;
-
       margin-top: 30px;
+    }
 
+    .memory-box {
       border: 1px solid #ff4655;
-
       padding: 25px;
-
       background: rgba(255, 70, 85, 0.05);
     }
 
     .memory-title {
       color: #ff4655;
-
       letter-spacing: 3px;
-
       font-size: 13px;
-
       margin-bottom: 20px;
     }
 
@@ -168,10 +163,88 @@
 
     .connection {
       color: #ff4655;
-
       font-weight: bold;
-
       letter-spacing: 2px;
+    }
+
+    /* ARCHIVE FILES */
+
+    .archive-summary {
+      border: 1px solid #ff4655;
+      padding: 25px;
+      margin-top: 25px;
+      background: rgba(255,70,85,0.05);
+      text-align: left;
+      line-height: 2;
+    }
+
+    .archive-summary strong {
+      color: white;
+    }
+
+    .archive-status {
+      color: #ff4655;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    /* TIMELINE */
+
+    .timeline {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .timeline-card {
+      border-left: 3px solid #ff4655;
+      background: rgba(255,255,255,0.03);
+
+      padding: 18px 20px;
+      margin-bottom: 15px;
+    }
+
+    .date {
+      color: #ff4655;
+      font-size: 12px;
+      letter-spacing: 3px;
+      font-weight: bold;
+    }
+
+    .event-title {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .event-text {
+      color: #aab3bb;
+      margin-top: 8px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .official {
+      border: 1px solid #ff4655;
+      background: rgba(255,70,85,0.08);
+      padding: 25px;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 600px) {
+
+      .screen {
+        padding: 30px 22px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      button {
+        width: 100%;
+      }
+
     }
 
   </style>
@@ -181,7 +254,9 @@
 <body>
 
 
-<!-- FIRST SCREEN -->
+<!-- ============================= -->
+<!-- OPENING -->
+<!-- ============================= -->
 
 <div class="screen active" id="screen1">
 
@@ -223,7 +298,9 @@
 
 
 
-<!-- SECOND SCREEN -->
+<!-- ============================= -->
+<!-- MISSION 01 -->
+<!-- ============================= -->
 
 <div class="screen" id="screen2">
 
@@ -240,7 +317,6 @@
   </h2>
 
   <div class="line"></div>
-
 
   <div class="info">
 
@@ -265,12 +341,12 @@
     <br>
 
     <strong>AGENTS MISSING:</strong>
+
     <span class="red">
       YOUR OTHER HALF
     </span>
 
   </div>
-
 
   <div class="objective">
 
@@ -286,11 +362,9 @@
 
   </div>
 
-
   <button id="scanButton">
     SCAN MATCH DATA
   </button>
-
 
   <div class="loading-container" id="loadingContainer">
 
@@ -298,53 +372,53 @@
 
   </div>
 
-
-
   <div id="memoryResult">
 
-    <div class="memory-title">
-      MEMORY PARTIALLY RECOVERED
+    <div class="memory-box">
+
+      <div class="memory-title">
+        MEMORY PARTIALLY RECOVERED
+      </div>
+
+      <div class="memory-text">
+
+        The map is gone.
+
+        <br><br>
+
+        The details faded.
+
+        <br><br>
+
+        But one thing is clear...
+
+        <br><br>
+
+        <span class="red">
+          You were missing your other half.
+        </span>
+
+        <br><br>
+
+        And somehow...
+
+        <br>
+
+        out of every player you could have matched with,
+
+        <br>
+
+        you found them.
+
+        <br><br>
+
+        <span class="connection">
+          CONNECTION CREATED // JAN 07 2025
+        </span>
+
+      </div>
+
     </div>
-
-
-    <div class="memory-text">
-
-      The map is gone.
-
-      <br><br>
-
-      The details faded.
-
-      <br><br>
-
-      But one thing is clear...
-
-      <br><br>
-
-      <span class="red">
-        You were missing your other half.
-      </span>
-
-      <br><br>
-
-      And somehow...
-
-      <br>
-
-      out of every player you could have matched with,
-
-      <br>
-
-      you found them.
-
-      <br><br>
-
-      <span class="connection">
-        CONNECTION CREATED // 01.07.2025
-      </span>
-
-    </div>
-
 
     <button id="continueButton">
       CONTINUE
@@ -356,21 +430,24 @@
 
 
 
-<!-- THIRD SCREEN -->
+<!-- ============================= -->
+<!-- ARCHIVE FRAGMENTS RECOVERED -->
+<!-- ============================= -->
 
 <div class="screen" id="screen3">
 
   <div class="small-title">
-    ARCHIVE STATUS // UPDATED
+    ARCHIVE SCAN // COMPLETE
   </div>
 
   <h1>
-    MISSION <span class="red">COMPLETE</span>
+    ARCHIVE FRAGMENTS
+    <span class="red">RECOVERED</span>
   </h1>
 
   <div class="line"></div>
 
-  <div class="info">
+  <div class="archive-summary">
 
     <strong>FIRST CONNECTION:</strong>
     RECOVERED
@@ -378,25 +455,379 @@
     <br>
 
     <strong>PLAYER 1:</strong>
-    CONNECTED
+    Honeybun&lt;3
 
     <br>
 
     <strong>PLAYER 2:</strong>
     LOCATED
 
-  </div>
+    <br><br>
 
+    <strong>MEMORY FILES FOUND:</strong>
+    5
+
+    <br>
+
+    <strong>CONNECTION HISTORY FOUND:</strong>
+    1
+
+    <br><br>
+
+    <span class="archive-status">
+      STATUS: DECRYPTABLE
+    </span>
+
+  </div>
 
   <div class="objective">
 
-    Additional memory files detected.
+    Additional data linked to the first connection has been restored.
+
+    <br><br>
+
+    These files appear to document
+    how the connection between Player 1 and Player 2 developed.
+
+  </div>
+
+  <button id="archiveButton">
+    ACCESS RECOVERED FILES
+  </button>
+
+</div>
+
+
+
+<!-- ============================= -->
+<!-- MISSION 02 INTRO -->
+<!-- ============================= -->
+
+<div class="screen" id="screen4">
+
+  <div class="small-title">
+    ARCHIVE FRAGMENT // 01
+  </div>
+
+  <h1>
+    CONNECTION <span class="red">HISTORY</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="info">
+
+    <strong>PRIMARY CHANNEL:</strong>
+    Discord
+
+    <br>
+
+    <strong>SHARED ACTIVITY:</strong>
+    Gaming
+
+    <br>
+
+    <strong>COMMUNICATION:</strong>
+    Messages / Calls
+
+    <br>
+
+    <strong>CONNECTION STATUS:</strong>
+    STRENGTHENING
+
+  </div>
+
+  <div class="objective">
+
+    <strong>ARCHIVE OBJECTIVE</strong>
+
+    <br><br>
+
+    Decrypt the recovered fragments.
+
+    <br>
+
+    Reconstruct how one random Valorant match
+    became something much more.
+
+  </div>
+
+  <button id="decryptButton">
+    DECRYPT ARCHIVE
+  </button>
+
+  <div class="loading-container" id="loadingContainer2">
+
+    <div class="loading-bar" id="loadingBar2"></div>
+
+  </div>
+
+  <div id="archiveResult">
+
+    <div class="memory-title">
+      ARCHIVE FRAGMENTS DECRYPTED
+    </div>
+
+    <div class="timeline">
+
+
+      <!-- FILE 01 -->
+
+      <div class="timeline-card">
+
+        <div class="date">
+          FILE 01 // FEB 10 2025
+        </div>
+
+        <div class="event-title">
+          CRUSH DETECTED
+        </div>
+
+        <div class="event-text">
+
+          After a month of playing games,
+          texting on Discord,
+          and spending more time together...
+
+          <br><br>
+
+          something changed.
+
+          <br><br>
+
+          During a Fortnite match,
+          while joking around,
+
+          <span class="red">
+            Honeybun&lt;3 accidentally said out loud
+            that he liked Player 2.
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FILE 02 -->
+
+      <div class="timeline-card">
+
+        <div class="date">
+          FILE 02 // FEB 15 2025
+        </div>
+
+        <div class="event-title">
+          LOVE SIGNAL RECEIVED
+        </div>
+
+        <div class="event-text">
+
+          The connection kept growing.
+
+          <br><br>
+
+          Five days later...
+
+          <span class="red">
+            Honeybun&lt;3 said "I love you."
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FILE 03 -->
+
+      <div class="timeline-card">
+
+        <div class="date">
+          FILE 03 // FEB 19 2025
+        </div>
+
+        <div class="event-title">
+          LOVE SIGNAL RETURNED
+        </div>
+
+        <div class="event-text">
+
+          Four days later...
+
+          <br><br>
+
+          Player 2 finally sent the signal back.
+
+          <br><br>
+
+          <span class="red">
+            "I love you too."
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FILE 04 -->
+
+      <div class="timeline-card">
+
+        <div class="date">
+          FILE 04 // CONNECTION ACTIVITY
+        </div>
+
+        <div class="event-title">
+          SIGNAL STRENGTHENING
+        </div>
+
+        <div class="event-text">
+
+          Messages whenever possible.
+
+          <br>
+
+          Calls whenever possible.
+
+          <br>
+
+          Games together.
+
+          <br>
+
+          Cute pictures sent back and forth.
+
+          <br><br>
+
+          Two people trying to spend
+          as much time together as distance allowed.
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FILE 05 -->
+
+      <div class="official">
+
+        <div class="date">
+          FILE 05 // APR 12 2025
+        </div>
+
+        <div class="event-title">
+          RELATIONSHIP STATUS UPDATED
+        </div>
+
+        <div class="event-text">
+
+          After months of getting closer...
+
+          <br><br>
+
+          the connection was no longer undefined.
+
+          <br><br>
+
+          <span class="connection">
+
+            PLAYER 1 + PLAYER 2
+
+            <br><br>
+
+            OFFICIAL COUPLE
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <button id="completeArchiveButton">
+      CLOSE ARCHIVE
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- ============================= -->
+<!-- MISSION 02 COMPLETE -->
+<!-- ============================= -->
+
+<div class="screen" id="screen5">
+
+  <div class="small-title">
+    ARCHIVE RESTORATION // COMPLETE
+  </div>
+
+  <h1>
+    CONNECTION HISTORY
+    <span class="red">VERIFIED</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="info">
+
+    <strong>PLAYER 1:</strong>
+    Honeybun&lt;3
+
+    <br>
+
+    <strong>PLAYER 2:</strong>
+    CONNECTED
+
+    <br>
+
+    <strong>CONNECTION:</strong>
+    MUTUAL
+
+    <br>
+
+    <strong>RELATIONSHIP STATUS:</strong>
+    OFFICIAL
+
+  </div>
+
+  <div class="objective">
+
+    ARCHIVE RESTORATION COMPLETE.
+
+    <br><br>
+
+    Five fragments successfully recovered.
+
+    <br>
+
+    Connection history verified.
+
+    <br><br>
+
+    Despite the distance,
+    both players continued choosing each other.
 
     <br><br>
 
     <span class="red">
-      MISSION 02 // CONNECTION ESTABLISHED
+      ADDITIONAL FRAGMENTS DETECTED...
     </span>
+
+    <br><br>
+
+    ARCHIVE FRAGMENT // 02
+
+    <br>
+
+    LONG DISTANCE
 
     <br><br>
 
@@ -413,24 +844,68 @@
   const screen1 = document.getElementById("screen1");
   const screen2 = document.getElementById("screen2");
   const screen3 = document.getElementById("screen3");
+  const screen4 = document.getElementById("screen4");
+  const screen5 = document.getElementById("screen5");
 
-  const acceptButton = document.getElementById("acceptButton");
-  const scanButton = document.getElementById("scanButton");
-  const continueButton = document.getElementById("continueButton");
 
-  const loadingContainer = document.getElementById("loadingContainer");
-  const loadingBar = document.getElementById("loadingBar");
+  const acceptButton =
+    document.getElementById("acceptButton");
 
-  const memoryResult = document.getElementById("memoryResult");
+  const scanButton =
+    document.getElementById("scanButton");
+
+  const continueButton =
+    document.getElementById("continueButton");
+
+  const archiveButton =
+    document.getElementById("archiveButton");
+
+  const decryptButton =
+    document.getElementById("decryptButton");
+
+  const completeArchiveButton =
+    document.getElementById("completeArchiveButton");
+
+
+  const loadingContainer =
+    document.getElementById("loadingContainer");
+
+  const loadingBar =
+    document.getElementById("loadingBar");
+
+  const memoryResult =
+    document.getElementById("memoryResult");
+
+
+  const loadingContainer2 =
+    document.getElementById("loadingContainer2");
+
+  const loadingBar2 =
+    document.getElementById("loadingBar2");
+
+  const archiveResult =
+    document.getElementById("archiveResult");
+
+
+
+  function changeScreen(currentScreen, nextScreen) {
+
+    currentScreen.classList.remove("active");
+
+    nextScreen.classList.add("active");
+
+    window.scrollTo(0, 0);
+
+  }
+
 
 
   acceptButton.addEventListener("click", function() {
 
-    screen1.classList.remove("active");
-
-    screen2.classList.add("active");
+    changeScreen(screen1, screen2);
 
   });
+
 
 
   scanButton.addEventListener("click", function() {
@@ -439,13 +914,11 @@
 
     scanButton.style.display = "none";
 
-
     setTimeout(function() {
 
       loadingBar.style.width = "100%";
 
     }, 100);
-
 
     setTimeout(function() {
 
@@ -458,11 +931,50 @@
   });
 
 
+
   continueButton.addEventListener("click", function() {
 
-    screen2.classList.remove("active");
+    changeScreen(screen2, screen3);
 
-    screen3.classList.add("active");
+  });
+
+
+
+  archiveButton.addEventListener("click", function() {
+
+    changeScreen(screen3, screen4);
+
+  });
+
+
+
+  decryptButton.addEventListener("click", function() {
+
+    loadingContainer2.style.display = "block";
+
+    decryptButton.style.display = "none";
+
+    setTimeout(function() {
+
+      loadingBar2.style.width = "100%";
+
+    }, 100);
+
+    setTimeout(function() {
+
+      loadingContainer2.style.display = "none";
+
+      archiveResult.style.display = "block";
+
+    }, 2800);
+
+  });
+
+
+
+  completeArchiveButton.addEventListener("click", function() {
+
+    changeScreen(screen4, screen5);
 
   });
 
