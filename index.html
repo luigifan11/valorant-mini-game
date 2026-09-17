@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,47 +8,108 @@
   <title>Valorant Mini Game</title>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      min-height: 100vh;
       background: #0f1923;
       color: white;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       text-align: center;
     }
 
     .screen {
       display: none;
+
       width: 90%;
-      max-width: 600px;
-      border: 2px solid #ff4655;
-      padding: 50px;
+      max-width: 650px;
+
       background: #111820;
+
+      border: 2px solid #ff4655;
+
+      padding: 45px;
+
+      box-shadow: 0 0 40px rgba(255, 70, 85, 0.15);
     }
 
     .screen.active {
       display: block;
     }
 
-    h1 {
+    .small-title {
       color: #ff4655;
       letter-spacing: 4px;
+      font-size: 12px;
     }
 
-    p {
-      line-height: 1.8;
+    h1 {
+      letter-spacing: 4px;
+      font-size: 38px;
+      margin: 15px 0;
+    }
+
+    .red {
+      color: #ff4655;
+    }
+
+    .line {
+      width: 100%;
+      height: 2px;
+      background: #ff4655;
+      margin: 25px 0;
+      opacity: 0.5;
+    }
+
+    .info {
+      color: #aab3bb;
+      line-height: 2;
+      font-size: 15px;
+      text-align: left;
+    }
+
+    .info strong {
+      color: white;
+    }
+
+    .objective {
+      margin-top: 25px;
+
+      padding: 20px;
+
+      background: rgba(255,255,255,0.03);
+
+      border-left: 3px solid #ff4655;
+
+      line-height: 1.7;
+
+      text-align: left;
     }
 
     button {
-      margin-top: 25px;
+      margin-top: 30px;
+
       background: #ff4655;
       color: white;
+
       border: none;
-      padding: 15px 30px;
-      font-size: 17px;
+
+      padding: 16px 35px;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      letter-spacing: 2px;
+
       cursor: pointer;
     }
 
@@ -55,113 +117,358 @@
       background: white;
       color: #ff4655;
     }
+
+    .loading-container {
+      width: 100%;
+
+      height: 8px;
+
+      background: #27323b;
+
+      margin-top: 30px;
+
+      display: none;
+    }
+
+    .loading-bar {
+      width: 0%;
+      height: 100%;
+
+      background: #ff4655;
+
+      transition: width 2.5s;
+    }
+
+    #memoryResult {
+      display: none;
+
+      margin-top: 30px;
+
+      border: 1px solid #ff4655;
+
+      padding: 25px;
+
+      background: rgba(255, 70, 85, 0.05);
+    }
+
+    .memory-title {
+      color: #ff4655;
+
+      letter-spacing: 3px;
+
+      font-size: 13px;
+
+      margin-bottom: 20px;
+    }
+
+    .memory-text {
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    .connection {
+      color: #ff4655;
+
+      font-weight: bold;
+
+      letter-spacing: 2px;
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <!-- FIRST SCREEN -->
-  <div class="screen active" id="screen1">
 
-    <p>CLASSIFIED // SPECIAL OPERATION</p>
+<!-- FIRST SCREEN -->
 
-    <h1>MISSION AVAILABLE</h1>
+<div class="screen active" id="screen1">
 
-    <p>
-      PLAYER 1: FOUND
-      <br>
-      PLAYER 2: CONNECTION LOST
-      <br><br>
-      OBJECTIVE:
-      <br>
-      FIND PLAYER 2
-    </p>
+  <div class="small-title">
+    CLASSIFIED // SPECIAL OPERATION
+  </div>
 
-    <button id="acceptButton">
-      ACCEPT MISSION
-    </button>
+  <h1>
+    MISSION <span class="red">AVAILABLE</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="info">
+
+    <strong>PLAYER 1:</strong>
+    Honeybun&lt;3
+
+    <br>
+
+    <strong>PLAYER 2:</strong>
+    CONNECTION LOST
+
+    <br><br>
+
+    <strong>OBJECTIVE:</strong>
+
+    <br>
+
+    FIND PLAYER 2
+
+  </div>
+
+  <button id="acceptButton">
+    ACCEPT MISSION
+  </button>
+
+</div>
+
+
+
+<!-- SECOND SCREEN -->
+
+<div class="screen" id="screen2">
+
+  <div class="small-title">
+    CONNECTION ESTABLISHED
+  </div>
+
+  <h1>
+    MISSION <span class="red">01</span>
+  </h1>
+
+  <h2>
+    THE MATCH
+  </h2>
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    <strong>PLAYER:</strong>
+    Honeybun&lt;3
+
+    <br>
+
+    <strong>DATE:</strong>
+    January 7, 2025
+
+    <br>
+
+    <strong>SOURCE:</strong>
+    Valorant Match
+
+    <br>
+
+    <strong>MAP:</strong>
+    DATA LOST
+
+    <br>
+
+    <strong>AGENTS MISSING:</strong>
+    <span class="red">
+      YOUR OTHER HALF
+    </span>
 
   </div>
 
 
-  <!-- SECOND SCREEN -->
-  <div class="screen" id="screen2">
+  <div class="objective">
 
-    <p>CONNECTION ESTABLISHED</p>
+    <strong>MISSION OBJECTIVE</strong>
 
-    <h1>MISSION ACCEPTED</h1>
+    <br><br>
 
-    <p>
-      FIRST CONNECTION DETECTED.
+    Scan the archived match data.
+
+    <br>
+
+    Recover the first connection.
+
+  </div>
+
+
+  <button id="scanButton">
+    SCAN MATCH DATA
+  </button>
+
+
+  <div class="loading-container" id="loadingContainer">
+
+    <div class="loading-bar" id="loadingBar"></div>
+
+  </div>
+
+
+
+  <div id="memoryResult">
+
+    <div class="memory-title">
+      MEMORY PARTIALLY RECOVERED
+    </div>
+
+
+    <div class="memory-text">
+
+      The map is gone.
+
       <br><br>
-      SOURCE:
+
+      The details faded.
+
+      <br><br>
+
+      But one thing is clear...
+
+      <br><br>
+
+      <span class="red">
+        You were missing your other half.
+      </span>
+
+      <br><br>
+
+      And somehow...
+
       <br>
-      VALORANT MATCH
+
+      out of every player you could have matched with,
+
+      <br>
+
+      you found them.
+
       <br><br>
-      MEMORY FILES FOUND.
-    </p>
+
+      <span class="connection">
+        CONNECTION CREATED // 01.07.2025
+      </span>
+
+    </div>
+
 
     <button id="continueButton">
-      BEGIN MISSION 01
+      CONTINUE
     </button>
 
   </div>
 
+</div>
 
-  <!-- THIRD SCREEN -->
-  <div class="screen" id="screen3">
 
-    <p>MISSION // 01</p>
 
-    <h1>THE MATCH</h1>
+<!-- THIRD SCREEN -->
 
-    <p>
-      This is where everything started.
-      <br><br>
-      Two random players entered the same Valorant match.
-      <br><br>
-      Neither of them knew what would happen next.
-    </p>
+<div class="screen" id="screen3">
+
+  <div class="small-title">
+    ARCHIVE STATUS // UPDATED
+  </div>
+
+  <h1>
+    MISSION <span class="red">COMPLETE</span>
+  </h1>
+
+  <div class="line"></div>
+
+  <div class="info">
+
+    <strong>FIRST CONNECTION:</strong>
+    RECOVERED
+
+    <br>
+
+    <strong>PLAYER 1:</strong>
+    CONNECTED
+
+    <br>
+
+    <strong>PLAYER 2:</strong>
+    LOCATED
 
   </div>
 
 
-  <script>
+  <div class="objective">
 
-    const acceptButton =
-      document.getElementById("acceptButton");
+    Additional memory files detected.
 
-    const continueButton =
-      document.getElementById("continueButton");
+    <br><br>
 
-    const screen1 =
-      document.getElementById("screen1");
+    <span class="red">
+      MISSION 02 // CONNECTION ESTABLISHED
+    </span>
 
-    const screen2 =
-      document.getElementById("screen2");
+    <br><br>
 
-    const screen3 =
-      document.getElementById("screen3");
+    STATUS: LOCKED
 
+  </div>
 
-    acceptButton.addEventListener("click", function() {
-
-      screen1.classList.remove("active");
-
-      screen2.classList.add("active");
-
-    });
+</div>
 
 
-    continueButton.addEventListener("click", function() {
 
-      screen2.classList.remove("active");
+<script>
 
-      screen3.classList.add("active");
+  const screen1 = document.getElementById("screen1");
+  const screen2 = document.getElementById("screen2");
+  const screen3 = document.getElementById("screen3");
 
-    });
+  const acceptButton = document.getElementById("acceptButton");
+  const scanButton = document.getElementById("scanButton");
+  const continueButton = document.getElementById("continueButton");
 
-  </script>
+  const loadingContainer = document.getElementById("loadingContainer");
+  const loadingBar = document.getElementById("loadingBar");
+
+  const memoryResult = document.getElementById("memoryResult");
+
+
+  acceptButton.addEventListener("click", function() {
+
+    screen1.classList.remove("active");
+
+    screen2.classList.add("active");
+
+  });
+
+
+  scanButton.addEventListener("click", function() {
+
+    loadingContainer.style.display = "block";
+
+    scanButton.style.display = "none";
+
+
+    setTimeout(function() {
+
+      loadingBar.style.width = "100%";
+
+    }, 100);
+
+
+    setTimeout(function() {
+
+      loadingContainer.style.display = "none";
+
+      memoryResult.style.display = "block";
+
+    }, 2800);
+
+  });
+
+
+  continueButton.addEventListener("click", function() {
+
+    screen2.classList.remove("active");
+
+    screen3.classList.add("active");
+
+  });
+
+</script>
+
 
 </body>
+
 </html>
