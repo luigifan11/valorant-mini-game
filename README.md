@@ -1,74 +1,2933 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Valorant Mini Game</title>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
       margin: 0;
-      background: #0f1923;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+
+      background:
+        radial-gradient(
+          circle at center,
+          #15232d 0%,
+          #0f1923 55%,
+          #081018 100%
+        );
+
       color: white;
-      font-family: Arial, sans-serif;
-      height: 100vh;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       text-align: center;
+
+      overflow-x: hidden;
+
+      position: relative;
     }
 
-    .container {
-      border: 2px solid #ff4655;
-      padding: 50px;
-      width: 500px;
-      background: #111820;
+
+
+    /* ========================================= */
+    /* BACKGROUND EFFECTS */
+    /* ========================================= */
+
+    body::after {
+      content: "";
+
+      position: fixed;
+
+      inset: 0;
+
+      pointer-events: none;
+
+      z-index: 900;
+
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.018),
+          rgba(255,255,255,0.018) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+
+      opacity: 0.55;
     }
+
+
+    .background-glow {
+      position: fixed;
+
+      width: 500px;
+      height: 500px;
+
+      border-radius: 50%;
+
+      background: #ff4655;
+
+      filter: blur(220px);
+
+      opacity: 0.08;
+
+      z-index: -1;
+
+      animation:
+        moveGlow 10s ease-in-out infinite alternate;
+    }
+
+
+    @keyframes moveGlow {
+
+      from {
+        transform: translate(-250px, -150px);
+      }
+
+      to {
+        transform: translate(300px, 180px);
+      }
+
+    }
+
+
+
+    /* ========================================= */
+    /* GAME SCREENS */
+    /* ========================================= */
+
+    .screen {
+      display: none;
+
+      width: 90%;
+      max-width: 700px;
+
+      min-height: 420px;
+
+      background:
+        rgba(17,24,32,0.97);
+
+      border:
+        2px solid #ff4655;
+
+      padding: 45px;
+
+      margin: 30px 0;
+
+      box-shadow:
+        0 0 50px
+        rgba(255,70,85,0.13);
+
+      position: relative;
+
+      overflow: hidden;
+    }
+
+
+    .screen.active {
+      display: block;
+
+      animation:
+        screenEnter
+        0.7s ease;
+    }
+
+
+    @keyframes screenEnter {
+
+      0% {
+        opacity: 0;
+
+        transform:
+          translateY(15px)
+          scale(0.985);
+
+        filter: blur(3px);
+      }
+
+      100% {
+        opacity: 1;
+
+        transform:
+          translateY(0)
+          scale(1);
+
+        filter: blur(0);
+      }
+
+    }
+
+
+    .screen::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: -5px;
+
+      width: 100%;
+      height: 3px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #ff4655,
+          transparent
+        );
+
+      opacity: 0.7;
+
+      animation:
+        scannerLine
+        4s linear infinite;
+    }
+
+
+    @keyframes scannerLine {
+
+      from {
+        transform:
+          translateY(0);
+      }
+
+      to {
+        transform:
+          translateY(700px);
+      }
+
+    }
+
+
+
+    /* ========================================= */
+    /* TEXT */
+    /* ========================================= */
+
+    .small-title {
+      color: #ff4655;
+
+      letter-spacing: 4px;
+
+      font-size: 12px;
+    }
+
 
     h1 {
-      color: #ff4655;
       letter-spacing: 4px;
+
+      font-size: 38px;
+
+      margin:
+        15px 0;
     }
 
-    .status {
-      color: #9aa0a6;
-      margin: 25px 0;
-      line-height: 1.8;
+
+    h2 {
+      letter-spacing: 3px;
     }
+
+
+    .red {
+      color: #ff4655;
+    }
+
+
+    .line {
+      width: 100%;
+
+      height: 2px;
+
+      background: #ff4655;
+
+      margin:
+        25px 0;
+
+      opacity: 0.5;
+    }
+
+
+    .info {
+      color: #aab3bb;
+
+      line-height: 2;
+
+      font-size: 15px;
+
+      text-align: left;
+    }
+
+
+    .info strong {
+      color: white;
+    }
+
+
+    .objective {
+      margin-top: 25px;
+
+      padding: 20px;
+
+      background:
+        rgba(255,255,255,0.03);
+
+      border-left:
+        3px solid #ff4655;
+
+      line-height: 1.7;
+
+      text-align: left;
+    }
+
+
+
+    /* ========================================= */
+    /* BUTTONS */
+    /* ========================================= */
 
     button {
-      background: #ff4655;
-      color: white;
-      border: none;
-      padding: 15px 35px;
-      font-size: 18px;
-      cursor: pointer;
+      margin-top: 30px;
+
+      background:
+        #ff4655;
+
+      color:
+        white;
+
+      border:
+        none;
+
+      padding:
+        16px 35px;
+
+      font-size:
+        15px;
+
+      font-weight:
+        bold;
+
+      letter-spacing:
+        2px;
+
+      cursor:
+        pointer;
+
+      transition:
+        0.2s ease;
+
+      position:
+        relative;
+
+      overflow:
+        hidden;
     }
 
+
     button:hover {
-      background: white;
-      color: #ff4655;
+      background:
+        white;
+
+      color:
+        #ff4655;
+
+      transform:
+        translateY(-2px);
+
+      box-shadow:
+        0 0 25px
+        rgba(255,70,85,0.4);
     }
+
+
+    button:disabled {
+      opacity: 0.7;
+
+      cursor: default;
+
+      transform: none;
+    }
+
+
+
+    /* ========================================= */
+    /* LOADING BAR */
+    /* ========================================= */
+
+    .loading-container {
+      width: 100%;
+
+      height: 8px;
+
+      background:
+        #27323b;
+
+      margin-top:
+        30px;
+
+      overflow:
+        hidden;
+    }
+
+
+    .loading-bar {
+      width: 0%;
+
+      height: 100%;
+
+      background:
+        linear-gradient(
+          90deg,
+          #ff4655,
+          #ff7b85,
+          #ff4655
+        );
+
+      transition:
+        width 2.5s ease;
+    }
+
+
+
+    /* ========================================= */
+    /* MEMORY BOX */
+    /* ========================================= */
+
+    .memory-box {
+      border:
+        1px solid #ff4655;
+
+      padding:
+        28px;
+
+      background:
+        rgba(255,70,85,0.05);
+    }
+
+
+    .memory-title {
+      color:
+        #ff4655;
+
+      letter-spacing:
+        3px;
+
+      font-size:
+        13px;
+
+      margin-bottom:
+        20px;
+    }
+
+
+    .memory-text {
+      line-height:
+        1.9;
+
+      font-size:
+        17px;
+    }
+
+
+    .connection {
+      color:
+        #ff4655;
+
+      font-weight:
+        bold;
+
+      letter-spacing:
+        2px;
+    }
+
+
+
+    /* ========================================= */
+    /* ARCHIVE SUMMARY */
+    /* ========================================= */
+
+    .archive-summary {
+      border:
+        1px solid #ff4655;
+
+      padding:
+        25px;
+
+      background:
+        rgba(255,70,85,0.05);
+
+      text-align:
+        left;
+
+      line-height:
+        2;
+    }
+
+
+    .archive-status {
+      color:
+        #ff4655;
+
+      font-weight:
+        bold;
+
+      letter-spacing:
+        2px;
+    }
+
+
+
+    /* ========================================= */
+    /* FILE CARDS */
+    /* ========================================= */
+
+    .file-card {
+      text-align:
+        left;
+
+      border-left:
+        3px solid #ff4655;
+
+      background:
+        rgba(255,255,255,0.035);
+
+      padding:
+        25px;
+
+      margin-top:
+        20px;
+
+      animation:
+        fileReveal
+        0.65s ease;
+    }
+
+
+    @keyframes fileReveal {
+
+      from {
+        opacity: 0;
+
+        transform:
+          translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+
+        transform:
+          translateY(0);
+      }
+
+    }
+
+
+    .date {
+      color:
+        #ff4655;
+
+      font-size:
+        12px;
+
+      letter-spacing:
+        3px;
+
+      font-weight:
+        bold;
+    }
+
+
+    .event-title {
+      color:
+        white;
+
+      font-size:
+        21px;
+
+      font-weight:
+        bold;
+
+      margin-top:
+        10px;
+    }
+
+
+    .event-text {
+      color:
+        #aab3bb;
+
+      margin-top:
+        15px;
+
+      line-height:
+        1.8;
+
+      font-size:
+        15px;
+    }
+
+
+    .official-card {
+      border:
+        1px solid #ff4655;
+
+      background:
+        rgba(255,70,85,0.08);
+
+      padding:
+        28px;
+
+      text-align:
+        left;
+
+      margin-top:
+        20px;
+    }
+
+
+
+    /* ========================================= */
+    /* HACKER TERMINAL */
+    /* ========================================= */
+
+    #decryptConsole {
+      background:
+        #05090d;
+
+      border:
+        1px solid #ff4655;
+
+      padding:
+        20px;
+
+      text-align:
+        left;
+
+      font-family:
+        "Courier New",
+        monospace;
+
+      color:
+        #ff4655;
+
+      min-height:
+        270px;
+
+      box-shadow:
+        inset 0 0 30px
+        rgba(255,70,85,0.08),
+
+        0 0 20px
+        rgba(255,70,85,0.08);
+    }
+
+
+    .terminal-header {
+      color:
+        white;
+
+      font-size:
+        12px;
+
+      letter-spacing:
+        2px;
+
+      border-bottom:
+        1px solid #27323b;
+
+      padding-bottom:
+        12px;
+
+      margin-bottom:
+        15px;
+    }
+
+
+    #terminalText {
+      line-height:
+        1.7;
+
+      font-size:
+        13px;
+
+      min-height:
+        160px;
+    }
+
+
+    .terminal-line {
+      animation:
+        terminalFlash
+        0.2s;
+    }
+
+
+    @keyframes terminalFlash {
+
+      from {
+        opacity: 0;
+
+        transform:
+          translateX(-5px);
+      }
+
+      to {
+        opacity: 1;
+
+        transform:
+          translateX(0);
+      }
+
+    }
+
+
+    .decrypt-progress {
+      width:
+        100%;
+
+      height:
+        6px;
+
+      background:
+        #1a242d;
+
+      margin-top:
+        18px;
+    }
+
+
+    #decryptBar {
+      width:
+        0%;
+
+      height:
+        100%;
+
+      background:
+        #ff4655;
+
+      transition:
+        width
+        0.2s linear;
+    }
+
+
+    #decryptPercent {
+      margin-top:
+        10px;
+
+      font-size:
+        12px;
+
+      color:
+        #aab3bb;
+
+      letter-spacing:
+        2px;
+    }
+
+
+
+    /* ========================================= */
+    /* TRANSITION OVERLAY */
+    /* ========================================= */
+
+    #transitionOverlay {
+      display:
+        none;
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      z-index:
+        2000;
+
+      background:
+        #080d12;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      flex-direction:
+        column;
+
+      padding:
+        30px;
+    }
+
+
+    #transitionOverlay.active {
+      display:
+        flex;
+    }
+
+
+    .transition-small {
+      color:
+        #ff4655;
+
+      letter-spacing:
+        5px;
+
+      font-size:
+        11px;
+
+      margin-bottom:
+        15px;
+    }
+
+
+    #transitionTitle {
+      font-size:
+        30px;
+
+      letter-spacing:
+        6px;
+
+      font-weight:
+        bold;
+
+      animation:
+        glitchTitle
+        0.65s infinite;
+    }
+
+
+    @keyframes glitchTitle {
+
+      0%,
+      88%,
+      100% {
+        transform:
+          translate(0);
+
+        text-shadow:
+          none;
+      }
+
+      91% {
+        transform:
+          translate(-2px, 1px);
+
+        text-shadow:
+          3px 0 #ff4655,
+          -3px 0 #71d7ff;
+      }
+
+      95% {
+        transform:
+          translate(2px, -1px);
+      }
+
+    }
+
+
+    .transition-bar {
+      width:
+        280px;
+
+      max-width:
+        70vw;
+
+      height:
+        5px;
+
+      background:
+        #202a33;
+
+      margin-top:
+        30px;
+    }
+
+
+    #transitionBarFill {
+      width:
+        0%;
+
+      height:
+        100%;
+
+      background:
+        #ff4655;
+    }
+
+
+    #transitionStatus {
+      color:
+        #8f9aa4;
+
+      font-size:
+        11px;
+
+      letter-spacing:
+        3px;
+
+      margin-top:
+        13px;
+    }
+
+
+
+    /* ========================================= */
+    /* GLITCH FLASH */
+    /* ========================================= */
+
+    #glitchFlash {
+      pointer-events:
+        none;
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      z-index:
+        2500;
+
+      opacity:
+        0;
+
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 8px,
+          rgba(255,70,85,0.15) 9px,
+          transparent 10px
+        );
+    }
+
+
+    #glitchFlash.flash {
+      animation:
+        glitchFlash
+        0.27s linear;
+    }
+
+
+    @keyframes glitchFlash {
+
+      0% {
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 1;
+
+        transform:
+          translateX(-8px);
+      }
+
+      45% {
+        opacity: 0.3;
+
+        transform:
+          translateX(6px);
+      }
+
+      70% {
+        opacity: 0.8;
+
+        transform:
+          translateX(-3px);
+      }
+
+      100% {
+        opacity: 0;
+
+        transform:
+          translateX(0);
+      }
+
+    }
+
+
+
+    /* ========================================= */
+    /* MOBILE */
+    /* ========================================= */
+
+    @media (max-width: 600px) {
+
+      .screen {
+        padding:
+          30px 22px;
+      }
+
+      h1 {
+        font-size:
+          27px;
+      }
+
+      button {
+        width:
+          100%;
+      }
+
+      #transitionTitle {
+        font-size:
+          21px;
+
+        letter-spacing:
+          4px;
+      }
+
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <div class="container">
 
-    <p>CLASSIFIED // SPECIAL OPERATION</p>
+<div class="background-glow"></div>
 
-    <h1>MISSION AVAILABLE</h1>
 
-    <div class="status">
-      PLAYER 1: FOUND<br>
-      PLAYER 2: CONNECTION LOST<br><br>
+<!-- ========================================= -->
+<!-- TRANSITION -->
+<!-- ========================================= -->
 
-      OBJECTIVE:<br>
-      FIND PLAYER 2
-    </div>
+<div id="transitionOverlay">
 
-    <button>ACCEPT MISSION</button>
+  <div class="transition-small">
+
+    SECURE SYSTEM // PROCESSING
 
   </div>
 
+
+  <div id="transitionTitle">
+
+    ACCESSING...
+
+  </div>
+
+
+  <div class="transition-bar">
+
+    <div id="transitionBarFill"></div>
+
+  </div>
+
+
+  <div id="transitionStatus">
+
+    PLEASE STAND BY
+
+  </div>
+
+</div>
+
+
+<div id="glitchFlash"></div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 1 -->
+<!-- OPENING -->
+<!-- ========================================= -->
+
+<div class="screen active" id="screen1">
+
+  <div class="small-title">
+
+    CLASSIFIED // SPECIAL OPERATION
+
+  </div>
+
+
+  <h1>
+
+    MISSION
+
+    <span class="red">
+
+      AVAILABLE
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    <strong>
+      PLAYER 1:
+    </strong>
+
+    Honeybun&lt;3
+
+    <br>
+
+    <strong>
+      PLAYER 2:
+    </strong>
+
+    CONNECTION LOST
+
+    <br><br>
+
+    <strong>
+      OBJECTIVE:
+    </strong>
+
+    <br>
+
+    FIND PLAYER 2
+
+  </div>
+
+
+  <button id="acceptButton">
+
+    ACCEPT MISSION
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 2 -->
+<!-- MISSION 01 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen2">
+
+  <div class="small-title">
+
+    MISSION 01 // INITIAL ARCHIVE
+
+  </div>
+
+
+  <h1>
+
+    THE
+
+    <span class="red">
+
+      MATCH
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    <strong>
+      PLAYER:
+    </strong>
+
+    Honeybun&lt;3
+
+    <br>
+
+    <strong>
+      DATE:
+    </strong>
+
+    January 7, 2025
+
+    <br>
+
+    <strong>
+      SOURCE:
+    </strong>
+
+    Valorant Match
+
+    <br>
+
+    <strong>
+      MAP:
+    </strong>
+
+    DATA LOST
+
+    <br>
+
+    <strong>
+      AGENTS MISSING:
+    </strong>
+
+    <span class="red">
+
+      YOUR OTHER HALF
+
+    </span>
+
+  </div>
+
+
+  <div class="objective">
+
+    <strong>
+      MISSION OBJECTIVE
+    </strong>
+
+    <br><br>
+
+    Scan the archived match data.
+
+    <br>
+
+    Recover the first connection.
+
+  </div>
+
+
+  <button id="scanButton">
+
+    SCAN MATCH DATA
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 3 -->
+<!-- SCANNING -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen3">
+
+  <div class="small-title">
+
+    ARCHIVE SEARCH // ACTIVE
+
+  </div>
+
+
+  <h1>
+
+    SCANNING
+
+    <span class="red">
+
+      MATCH DATA
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    Searching archived game session...
+
+    <br>
+
+    Locating first connection...
+
+    <br>
+
+    Recovering damaged memory data...
+
+  </div>
+
+
+  <div class="loading-container">
+
+    <div
+      class="loading-bar"
+      id="mission1LoadingBar"
+    ></div>
+
+  </div>
+
+
+  <div class="objective">
+
+    PLEASE WAIT...
+
+  </div>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 4 -->
+<!-- MEMORY RECOVERED -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen4">
+
+  <div class="small-title">
+
+    MEMORY FILE // PARTIALLY RESTORED
+
+  </div>
+
+
+  <h1>
+
+    MEMORY
+
+    <span class="red">
+
+      RECOVERED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="memory-box">
+
+    <div class="memory-title">
+
+      FIRST CONNECTION DATA
+
+    </div>
+
+
+    <div class="memory-text">
+
+      The map is gone.
+
+      <br><br>
+
+      The details blurry.
+
+      <br><br>
+
+      But, something is always on your mind...
+
+      <br><br>
+
+
+      <span class="red">
+
+        Your other half.
+
+      </span>
+
+
+      <br><br>
+
+      And out of all the assigned partners
+      you could have gotten that day,
+
+      <br>
+
+      you got that special person.
+
+      <br><br>
+
+
+      <span class="connection">
+
+        FIRST CONNECTION //
+        JANUARY 7, 2025
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button id="memoryContinueButton">
+
+    CONTINUE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 5 -->
+<!-- ARCHIVE FRAGMENTS -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen5">
+
+  <div class="small-title">
+
+    ARCHIVE SCAN // COMPLETE
+
+  </div>
+
+
+  <h1>
+
+    ARCHIVE FRAGMENTS
+
+    <span class="red">
+
+      RECOVERED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="archive-summary">
+
+    <strong>
+      FIRST CONNECTION:
+    </strong>
+
+    RECOVERED
+
+    <br>
+
+
+    <strong>
+      PLAYER 1:
+    </strong>
+
+    Honeybun&lt;3
+
+    <br>
+
+
+    <strong>
+      PLAYER 2:
+    </strong>
+
+
+    <span class="red">
+
+      STILL LOOKING
+
+    </span>
+
+
+    <br><br>
+
+
+    <strong>
+      MEMORY FILES FOUND:
+    </strong>
+
+    5
+
+    <br>
+
+
+    <strong>
+      CONNECTION HISTORY FOUND:
+    </strong>
+
+    1
+
+    <br><br>
+
+
+    <span class="archive-status">
+
+      STATUS: DECRYPTABLE
+
+    </span>
+
+  </div>
+
+
+  <div class="objective">
+
+    Additional data linked to the first connection
+    has been found.
+
+    <br><br>
+
+    Player 2's current location remains unknown.
+
+    <br><br>
+
+    However...
+
+    <br><br>
+
+    the recovered files contain traces
+    of a previous connection.
+
+  </div>
+
+
+  <button id="archiveButton">
+
+    ACCESS RECOVERED FILES
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 6 -->
+<!-- MISSION 02 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen6">
+
+  <div class="small-title">
+
+    MISSION 02 // TRACE THE CONNECTION
+
+  </div>
+
+
+  <h1>
+
+    TRACE THE
+
+    <span class="red">
+
+      CONNECTION
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    <strong>
+      AGENT CODENAME:
+    </strong>
+
+    Honeybun&lt;3
+
+    <br>
+
+
+    <strong>
+      TARGET:
+    </strong>
+
+    Player 2
+
+    <br>
+
+
+    <strong>
+      PRIMARY CHANNEL:
+    </strong>
+
+    Discord
+
+    <br>
+
+
+    <strong>
+      SHARED ACTIVITY:
+    </strong>
+
+    Gaming
+
+    <br>
+
+
+    <strong>
+      COMMUNICATION:
+    </strong>
+
+    Messages / Calls
+
+    <br>
+
+
+    <strong>
+      CONNECTION STATUS:
+    </strong>
+
+    TRACE DETECTED
+
+  </div>
+
+
+  <div class="objective">
+
+    <strong>
+      MISSION OBJECTIVE
+    </strong>
+
+    <br><br>
+
+    Recover more fragments
+
+    <br>
+
+    and bring Player 2 home.
+
+    <br><br>
+
+
+    <span class="red">
+
+      AGENT CODENAME //
+      HONEYBUN&lt;3
+
+    </span>
+
+  </div>
+
+
+  <button id="beginTraceButton">
+
+    BEGIN TRACE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 7 -->
+<!-- DECRYPTING -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen7">
+
+  <div class="small-title">
+
+    SECURE ACCESS // ACTIVE
+
+  </div>
+
+
+  <h1>
+
+    DECRYPTING
+
+    <span class="red">
+
+      ARCHIVE
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div id="decryptConsole">
+
+    <div class="terminal-header">
+
+      SECURE ARCHIVE TERMINAL //
+      CONNECTION TRACE
+
+    </div>
+
+
+    <div id="terminalText"></div>
+
+
+    <div class="decrypt-progress">
+
+      <div id="decryptBar"></div>
+
+    </div>
+
+
+    <div id="decryptPercent">
+
+      DECRYPTION // 0%
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 8 -->
+<!-- FILE 01 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen8">
+
+  <div class="small-title">
+
+    RECOVERED ARCHIVE // FILE 01 OF 05
+
+  </div>
+
+
+  <h1>
+
+    CRUSH
+
+    <span class="red">
+
+      DETECTED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="file-card">
+
+    <div class="date">
+
+      FEBRUARY 10 // 2025
+
+    </div>
+
+
+    <div class="event-title">
+
+      CONNECTION ANOMALY DETECTED
+
+    </div>
+
+
+    <div class="event-text">
+
+      After a month of playing games,
+      texting on Discord,
+      and spending more time together...
+
+      <br><br>
+
+      something changed.
+
+      <br><br>
+
+      During a Fortnite match,
+      while joking around,
+
+
+      <span class="red">
+
+        Honeybun&lt;3 accidentally said out loud
+        that he liked Player 2.
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button id="file1Button">
+
+    NEXT FILE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 9 -->
+<!-- FILE 02 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen9">
+
+  <div class="small-title">
+
+    RECOVERED ARCHIVE // FILE 02 OF 05
+
+  </div>
+
+
+  <h1>
+
+    LOVE SIGNAL
+
+    <span class="red">
+
+      RECEIVED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="file-card">
+
+    <div class="date">
+
+      FEBRUARY 15 // 2025
+
+    </div>
+
+
+    <div class="event-title">
+
+      SIGNAL INTENSITY INCREASED
+
+    </div>
+
+
+    <div class="event-text">
+
+      The connection kept growing.
+
+      <br><br>
+
+      Five days later...
+
+      <br><br>
+
+
+      <span class="red">
+
+        Honeybun&lt;3 said
+        "I love you."
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button id="file2Button">
+
+    NEXT FILE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 10 -->
+<!-- FILE 03 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen10">
+
+  <div class="small-title">
+
+    RECOVERED ARCHIVE // FILE 03 OF 05
+
+  </div>
+
+
+  <h1>
+
+    LOVE SIGNAL
+
+    <span class="red">
+
+      RETURNED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="file-card">
+
+    <div class="date">
+
+      FEBRUARY 19 // 2025
+
+    </div>
+
+
+    <div class="event-title">
+
+      MUTUAL SIGNAL CONFIRMED
+
+    </div>
+
+
+    <div class="event-text">
+
+      Four days later...
+
+      <br><br>
+
+      Player 2 finally sent the signal back.
+
+      <br><br>
+
+
+      <span class="red">
+
+        "I love you too."
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button id="file3Button">
+
+    NEXT FILE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 11 -->
+<!-- FILE 04 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen11">
+
+  <div class="small-title">
+
+    RECOVERED ARCHIVE // FILE 04 OF 05
+
+  </div>
+
+
+  <h1>
+
+    SIGNAL
+
+    <span class="red">
+
+      STRENGTHENING
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="file-card">
+
+    <div class="date">
+
+      CONNECTION ACTIVITY
+
+    </div>
+
+
+    <div class="event-title">
+
+      DAILY SIGNAL EXCHANGE
+
+    </div>
+
+
+    <div class="event-text">
+
+      Messages whenever possible.
+
+      <br><br>
+
+      Calls whenever possible.
+
+      <br><br>
+
+      Games together.
+
+      <br><br>
+
+      Cute pictures sent back and forth.
+
+      <br><br>
+
+      Two people trying to spend
+      as much time together
+      as distance allowed.
+
+    </div>
+
+  </div>
+
+
+  <button id="file4Button">
+
+    NEXT FILE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 12 -->
+<!-- FILE 05 -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen12">
+
+  <div class="small-title">
+
+    RECOVERED ARCHIVE // FILE 05 OF 05
+
+  </div>
+
+
+  <h1>
+
+    RELATIONSHIP STATUS
+
+    <span class="red">
+
+      UPDATED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="official-card">
+
+    <div class="date">
+
+      APRIL 12 // 2025
+
+    </div>
+
+
+    <div class="event-title">
+
+      CONNECTION CLASSIFICATION CHANGED
+
+    </div>
+
+
+    <div class="event-text">
+
+      After months of getting closer...
+
+      <br><br>
+
+      the connection was no longer undefined.
+
+      <br><br>
+
+
+      <span class="connection">
+
+        PLAYER 1 + PLAYER 2
+
+        <br><br>
+
+        OFFICIAL COUPLE
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button id="file5Button">
+
+    COMPLETE TRACE
+
+  </button>
+
+</div>
+
+
+
+<!-- ========================================= -->
+<!-- SCREEN 13 -->
+<!-- MISSION 02 COMPLETE -->
+<!-- ========================================= -->
+
+<div class="screen" id="screen13">
+
+  <div class="small-title">
+
+    TRACE OPERATION // COMPLETE
+
+  </div>
+
+
+  <h1>
+
+    CONNECTION
+
+    <span class="red">
+
+      VERIFIED
+
+    </span>
+
+  </h1>
+
+
+  <div class="line"></div>
+
+
+  <div class="info">
+
+    <strong>
+      AGENT:
+    </strong>
+
+    Honeybun&lt;3
+
+    <br>
+
+
+    <strong>
+      PLAYER 2:
+    </strong>
+
+
+    <span class="red">
+
+      STILL LOOKING
+
+    </span>
+
+
+    <br>
+
+
+    <strong>
+      CONNECTION:
+    </strong>
+
+    VERIFIED
+
+    <br>
+
+
+    <strong>
+      RELATIONSHIP STATUS:
+    </strong>
+
+    OFFICIAL
+
+  </div>
+
+
+  <div class="objective">
+
+    CONNECTION TRACE COMPLETE.
+
+    <br><br>
+
+    Five archive fragments successfully recovered.
+
+    <br><br>
+
+    Connection history verified.
+
+    <br><br>
+
+    Player 2 remains missing.
+
+    <br><br>
+
+    But the recovered signal continues...
+
+    <br><br>
+
+
+    <span class="red">
+
+      ADDITIONAL SIGNAL DETECTED...
+
+    </span>
+
+
+    <br><br>
+
+    NEW MISSION DATA AVAILABLE
+
+    <br><br>
+
+    STATUS: LOCKED
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+  /* ========================================= */
+  /* SCREENS */
+  /* ========================================= */
+
+  const screens = {};
+
+  for (let i = 1; i <= 13; i++) {
+
+    screens[i] =
+      document.getElementById(
+        "screen" + i
+      );
+
+  }
+
+
+
+  /* ========================================= */
+  /* TRANSITION ELEMENTS */
+  /* ========================================= */
+
+  const transitionOverlay =
+    document.getElementById(
+      "transitionOverlay"
+    );
+
+  const transitionTitle =
+    document.getElementById(
+      "transitionTitle"
+    );
+
+  const transitionStatus =
+    document.getElementById(
+      "transitionStatus"
+    );
+
+  const transitionBarFill =
+    document.getElementById(
+      "transitionBarFill"
+    );
+
+  const glitchFlash =
+    document.getElementById(
+      "glitchFlash"
+    );
+
+
+
+  /* ========================================= */
+  /* GLITCH */
+  /* ========================================= */
+
+  function triggerGlitch() {
+
+    glitchFlash.classList.remove(
+      "flash"
+    );
+
+    void glitchFlash.offsetWidth;
+
+    glitchFlash.classList.add(
+      "flash"
+    );
+
+  }
+
+
+
+  /* ========================================= */
+  /* CHANGE SCREEN */
+  /* ========================================= */
+
+  function showScreen(
+    currentNumber,
+    nextNumber
+  ) {
+
+    screens[currentNumber]
+      .classList.remove(
+        "active"
+      );
+
+    screens[nextNumber]
+      .classList.add(
+        "active"
+      );
+
+    window.scrollTo(
+      0,
+      0
+    );
+
+  }
+
+
+
+  /* ========================================= */
+  /* CINEMATIC TRANSITION */
+  /* ========================================= */
+
+  function transitionTo(
+    currentNumber,
+    nextNumber,
+    title,
+    status
+  ) {
+
+    transitionTitle.innerText =
+      title;
+
+    transitionStatus.innerText =
+      status;
+
+    transitionBarFill.style.width =
+      "0%";
+
+    transitionOverlay.classList.add(
+      "active"
+    );
+
+
+    let progress =
+      0;
+
+
+    const loading =
+      setInterval(
+        function() {
+
+          progress += 5;
+
+          if (progress > 100) {
+
+            progress = 100;
+
+          }
+
+          transitionBarFill.style.width =
+            progress + "%";
+
+
+          if (progress >= 100) {
+
+            clearInterval(
+              loading
+            );
+
+          }
+
+        },
+        50
+      );
+
+
+    setTimeout(
+      triggerGlitch,
+      450
+    );
+
+
+    setTimeout(
+      function() {
+
+        showScreen(
+          currentNumber,
+          nextNumber
+        );
+
+      },
+      850
+    );
+
+
+    setTimeout(
+      function() {
+
+        transitionOverlay.classList.remove(
+          "active"
+        );
+
+        triggerGlitch();
+
+      },
+      1200
+    );
+
+  }
+
+
+
+  /* ========================================= */
+  /* OPENING -> MISSION 01 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "acceptButton"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          1,
+          2,
+          "MISSION 01",
+          "LOADING INITIAL ARCHIVE"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* MISSION 01 -> SCANNING */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "scanButton"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          2,
+          3,
+          "ARCHIVE SEARCH",
+          "SCANNING MATCH DATA"
+        );
+
+
+        setTimeout(
+          startMission1Scan,
+          1250
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* MISSION 01 SCAN */
+  /* ========================================= */
+
+  function startMission1Scan() {
+
+    const bar =
+      document.getElementById(
+        "mission1LoadingBar"
+      );
+
+
+    bar.style.width =
+      "0%";
+
+
+    setTimeout(
+      function() {
+
+        bar.style.width =
+          "100%";
+
+      },
+      100
+    );
+
+
+    setTimeout(
+      function() {
+
+        transitionTo(
+          3,
+          4,
+          "MEMORY FOUND",
+          "RESTORING FIRST CONNECTION"
+        );
+
+      },
+      3000
+    );
+
+  }
+
+
+
+  /* ========================================= */
+  /* MEMORY -> ARCHIVE */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "memoryContinueButton"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          4,
+          5,
+          "ARCHIVE ACCESS",
+          "RECOVERING LOST FRAGMENTS"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* ARCHIVE -> MISSION 02 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "archiveButton"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          5,
+          6,
+          "MISSION 02",
+          "INITIALIZING CONNECTION TRACE"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* MISSION 02 -> DECRYPTION */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "beginTraceButton"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          6,
+          7,
+          "SECURE ACCESS",
+          "DECRYPTING CONNECTION ARCHIVE"
+        );
+
+
+        setTimeout(
+          startDecrypting,
+          1250
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* HACKER DECRYPTION */
+  /* ========================================= */
+
+  const hackerLines = [
+
+    "> INITIALIZING SECURE TRACE...",
+
+    "> AGENT HONEYBUN AUTHORIZED...",
+
+    "> ACCESSING CONNECTION ARCHIVE...",
+
+    "> BYPASSING CORRUPTED MEMORY SECTORS...",
+
+    "> SEARCHING PLAYER 2 SIGNAL...",
+
+    "> FRAGMENT 01 DETECTED...",
+
+    "> DECODING DISCORD COMMUNICATION LOGS...",
+
+    "> SEARCHING GAME SESSION RECORDS...",
+
+    "> LOVE SIGNAL DETECTED...",
+
+    "> FRAGMENT 02 RECOVERED...",
+
+    "> FRAGMENT 03 RECOVERED...",
+
+    "> RELATIONSHIP DATA FOUND...",
+
+    "> CONNECTION HISTORY VERIFIED...",
+
+    "> PLAYER 2 SIGNAL TRACE ACTIVE...",
+
+    "> ARCHIVE DECRYPTION COMPLETE."
+
+  ];
+
+
+  const hackerCharacters =
+
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>?/";
+
+
+  function randomCode(
+    length
+  ) {
+
+    let result =
+      "";
+
+
+    for (
+      let i = 0;
+      i < length;
+      i++
+    ) {
+
+      result +=
+        hackerCharacters.charAt(
+
+          Math.floor(
+
+            Math.random() *
+            hackerCharacters.length
+
+          )
+
+        );
+
+    }
+
+
+    return result;
+
+  }
+
+
+
+  function startDecrypting() {
+
+    const terminalText =
+      document.getElementById(
+        "terminalText"
+      );
+
+    const decryptBar =
+      document.getElementById(
+        "decryptBar"
+      );
+
+    const decryptPercent =
+      document.getElementById(
+        "decryptPercent"
+      );
+
+
+    terminalText.innerHTML =
+      "";
+
+    decryptBar.style.width =
+      "0%";
+
+    decryptPercent.innerText =
+      "DECRYPTION // 0%";
+
+
+    let progress =
+      0;
+
+    let lineNumber =
+      0;
+
+
+    const interval =
+      setInterval(
+        function() {
+
+          progress += 4;
+
+
+          if (progress > 100) {
+
+            progress = 100;
+
+          }
+
+
+          decryptBar.style.width =
+            progress + "%";
+
+
+          decryptPercent.innerText =
+
+            "DECRYPTION // " +
+            progress +
+            "%";
+
+
+          if (
+            lineNumber <
+            hackerLines.length
+          ) {
+
+            const line =
+              document.createElement(
+                "div"
+              );
+
+
+            line.className =
+              "terminal-line";
+
+
+            line.innerHTML =
+
+              hackerLines[
+                lineNumber
+              ]
+
+              +
+
+              " <span style='color:#69737c'>"
+
+              +
+
+              randomCode(
+                Math.floor(
+                  Math.random() * 12
+                ) + 6
+              )
+
+              +
+
+              "</span>";
+
+
+            terminalText.appendChild(
+              line
+            );
+
+
+            lineNumber++;
+
+          }
+
+
+          if (
+            progress >= 100
+          ) {
+
+            clearInterval(
+              interval
+            );
+
+
+            setTimeout(
+              function() {
+
+                transitionTo(
+                  7,
+                  8,
+                  "FILE 01 RECOVERED",
+                  "OPENING CONNECTION ARCHIVE"
+                );
+
+              },
+              800
+            );
+
+          }
+
+        },
+        180
+      );
+
+  }
+
+
+
+  /* ========================================= */
+  /* FILE 01 -> FILE 02 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "file1Button"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          8,
+          9,
+          "FILE 02 RECOVERED",
+          "DECODING LOVE SIGNAL"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* FILE 02 -> FILE 03 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "file2Button"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          9,
+          10,
+          "FILE 03 RECOVERED",
+          "VERIFYING RETURN SIGNAL"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* FILE 03 -> FILE 04 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "file3Button"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          10,
+          11,
+          "FILE 04 RECOVERED",
+          "ANALYZING CONNECTION ACTIVITY"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* FILE 04 -> FILE 05 */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "file4Button"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          11,
+          12,
+          "FINAL FILE RECOVERED",
+          "VERIFYING RELATIONSHIP STATUS"
+        );
+
+      }
+    );
+
+
+
+  /* ========================================= */
+  /* FILE 05 -> COMPLETE */
+  /* ========================================= */
+
+  document
+    .getElementById(
+      "file5Button"
+    )
+    .addEventListener(
+      "click",
+      function() {
+
+        transitionTo(
+          12,
+          13,
+          "TRACE COMPLETE",
+          "VERIFYING CONNECTION DATA"
+        );
+
+      }
+    );
+
+</script>
+
+
 </body>
+
 </html>
