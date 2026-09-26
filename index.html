@@ -277,10 +277,246 @@
       .floor-list { display:grid; grid-template-columns:repeat(2,1fr); }
       .store-grid { grid-template-columns:1fr; }
     }
+
+
+    /* ========================================= */
+    /* PRE-COMIC MISSION / ARCHIVE INTRO */
+    /* ========================================= */
+    #introApp {
+      min-height:100vh;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(255,70,85,.12), transparent 28%),
+        linear-gradient(#09111a,#05090d 70%);
+    }
+    .intro-screen {
+      display:none;
+      width:min(760px,94vw);
+      min-height:520px;
+      border:1px solid rgba(255,70,85,.65);
+      background:rgba(10,16,22,.97);
+      box-shadow:0 0 60px rgba(255,70,85,.15);
+      padding:38px;
+      position:relative;
+      overflow:hidden;
+    }
+    .intro-screen.active { display:block; animation:introEnter .55s ease both; }
+    @keyframes introEnter {
+      from { opacity:0; transform:translateY(12px) scale(.99); filter:blur(3px); }
+      to { opacity:1; transform:none; filter:none; }
+    }
+    .intro-screen::before {
+      content:"";
+      position:absolute;
+      top:-3px; left:0; width:100%; height:2px;
+      background:linear-gradient(90deg,transparent,var(--red),transparent);
+      animation:introScan 4s linear infinite;
+      opacity:.65;
+    }
+    @keyframes introScan { from{transform:translateY(0)} to{transform:translateY(700px)} }
+    .intro-kicker { color:var(--red); letter-spacing:4px; font-size:11px; font-weight:800; }
+    .intro-title { font-size:clamp(34px,6vw,62px); line-height:.96; margin:12px 0 22px; letter-spacing:2px; }
+    .intro-line { height:1px; background:rgba(255,70,85,.55); margin:22px 0; }
+    .intro-info { color:#aab4bd; text-align:left; line-height:2; font-size:15px; }
+    .intro-info strong { color:white; }
+    .intro-box { margin-top:24px; padding:18px 20px; border-left:3px solid var(--red); background:rgba(255,255,255,.03); text-align:left; line-height:1.75; }
+    .intro-memory { margin-top:24px; padding:24px; border:1px solid var(--red); background:rgba(255,70,85,.05); line-height:1.85; }
+    .intro-red { color:var(--red); }
+    .intro-status { color:var(--red); font-weight:800; letter-spacing:2px; }
+    .intro-progress { height:8px; background:#17222c; margin:26px 0 10px; overflow:hidden; }
+    .intro-progress > div { height:100%; width:0%; background:linear-gradient(90deg,var(--red),#ff9aa2); transition:width 2.5s ease; }
+    .intro-terminal { margin-top:24px; border:1px solid var(--red); background:#05090d; padding:18px; text-align:left; font-family:"Courier New",monospace; min-height:250px; }
+    .intro-terminal-head { color:white; border-bottom:1px solid #25313b; padding-bottom:10px; margin-bottom:12px; font-size:12px; letter-spacing:2px; }
+    #introTerminalText { color:var(--red); line-height:1.7; font-size:13px; min-height:150px; }
+    .intro-file { text-align:left; border-left:3px solid var(--red); background:rgba(255,255,255,.03); padding:22px; margin-top:18px; }
+    .intro-file-date { color:var(--red); font-size:12px; font-weight:800; letter-spacing:3px; }
+    .intro-file-title { font-size:20px; font-weight:800; margin-top:9px; }
+    .intro-file-text { color:#aab4bd; margin-top:12px; line-height:1.75; }
+    #introTransition {
+      display:none; position:fixed; inset:0; z-index:3000; background:#070c11;
+      align-items:center; justify-content:center; flex-direction:column; padding:30px;
+    }
+    #introTransition.active { display:flex; }
+    #introTransitionTitle { font-size:clamp(28px,5vw,48px); font-weight:900; letter-spacing:5px; text-align:center; }
+    #introTransitionStatus { color:#8f9aa4; margin-top:14px; font-size:11px; letter-spacing:3px; }
+    .intro-transition-track { width:min(320px,70vw); height:5px; background:#202a33; margin-top:26px; overflow:hidden; }
+    #introTransitionFill { width:0%; height:100%; background:var(--red); }
+    @media (max-width:760px){
+      #introApp{padding:0}.intro-screen{width:100vw;min-height:100vh;border-left:0;border-right:0;padding:28px 20px}
+    }
+
   </style>
 </head>
 <body>
-  <div class="app">
+
+  <!-- ====================================================== -->
+  <!-- PRE-COMIC MISSION / ARCHIVE INTRO                      -->
+  <!-- This is the original game section that comes FIRST.    -->
+  <!-- ====================================================== -->
+  <div id="introTransition">
+    <div class="intro-kicker">SECURE SYSTEM // PROCESSING</div>
+    <div id="introTransitionTitle">ACCESSING...</div>
+    <div class="intro-transition-track"><div id="introTransitionFill"></div></div>
+    <div id="introTransitionStatus">PLEASE STAND BY</div>
+  </div>
+
+  <div id="introApp">
+    <section class="intro-screen active" id="intro1">
+      <div class="intro-kicker">CLASSIFIED // SPECIAL OPERATION</div>
+      <div class="intro-title">MISSION <span class="intro-red">AVAILABLE</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">
+        <strong>PLAYER 1:</strong> Honeybun&lt;3<br>
+        <strong>PLAYER 2:</strong> CONNECTION LOST<br><br>
+        <strong>OBJECTIVE:</strong><br>FIND PLAYER 2
+      </div>
+      <button id="introAccept">ACCEPT MISSION</button>
+    </section>
+
+    <section class="intro-screen" id="intro2">
+      <div class="intro-kicker">MISSION 01 // INITIAL ARCHIVE</div>
+      <div class="intro-title">THE <span class="intro-red">MATCH</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">
+        <strong>PLAYER:</strong> Honeybun&lt;3<br>
+        <strong>DATE:</strong> January 7, 2025<br>
+        <strong>SOURCE:</strong> Valorant Match<br>
+        <strong>MAP:</strong> DATA LOST<br>
+        <strong>AGENTS MISSING:</strong> <span class="intro-red">YOUR OTHER HALF</span>
+      </div>
+      <div class="intro-box"><strong>MISSION OBJECTIVE</strong><br><br>Scan the archived match data.<br>Recover the first connection.</div>
+      <button id="introScan">SCAN MATCH DATA</button>
+    </section>
+
+    <section class="intro-screen" id="intro3">
+      <div class="intro-kicker">ARCHIVE SEARCH // ACTIVE</div>
+      <div class="intro-title">SCANNING <span class="intro-red">MATCH DATA</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">Searching archived game session...<br>Locating first connection...<br>Recovering damaged memory data...</div>
+      <div class="intro-progress"><div id="introScanFill"></div></div>
+      <div class="intro-box">PLEASE WAIT...</div>
+    </section>
+
+    <section class="intro-screen" id="intro4">
+      <div class="intro-kicker">MEMORY FILE // PARTIALLY RESTORED</div>
+      <div class="intro-title">MEMORY <span class="intro-red">RECOVERED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-memory">
+        The map is gone.<br><br>
+        The details blurry.<br><br>
+        But, something is always on your mind...<br><br>
+        <span class="intro-red">Your other half.</span><br><br>
+        And out of all the assigned partners you could have gotten that day,<br>
+        you got that special person.<br><br>
+        <span class="intro-status">FIRST CONNECTION // JANUARY 7, 2025</span>
+      </div>
+      <button id="introMemoryNext">CONTINUE</button>
+    </section>
+
+    <section class="intro-screen" id="intro5">
+      <div class="intro-kicker">ARCHIVE SCAN // COMPLETE</div>
+      <div class="intro-title">ARCHIVE FRAGMENTS <span class="intro-red">RECOVERED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">
+        <strong>FIRST CONNECTION:</strong> RECOVERED<br>
+        <strong>PLAYER 1:</strong> Honeybun&lt;3<br>
+        <strong>PLAYER 2:</strong> <span class="intro-red">STILL LOOKING</span><br><br>
+        <strong>MEMORY FILES FOUND:</strong> 5<br>
+        <strong>CONNECTION HISTORY FOUND:</strong> 1<br><br>
+        <span class="intro-status">STATUS: DECRYPTABLE</span>
+      </div>
+      <div class="intro-box">Additional data linked to the first connection has been found.<br><br>Player 2's current location remains unknown.<br><br>However... the recovered files contain traces of a previous connection.</div>
+      <button id="introArchiveNext">ACCESS RECOVERED FILES</button>
+    </section>
+
+    <section class="intro-screen" id="intro6">
+      <div class="intro-kicker">MISSION 02 // TRACE THE CONNECTION</div>
+      <div class="intro-title">TRACE THE <span class="intro-red">CONNECTION</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">
+        <strong>AGENT CODENAME:</strong> Honeybun&lt;3<br>
+        <strong>TARGET:</strong> Player 2<br>
+        <strong>PRIMARY CHANNEL:</strong> Discord<br>
+        <strong>SHARED ACTIVITY:</strong> Gaming<br>
+        <strong>COMMUNICATION:</strong> Messages / Calls<br>
+        <strong>CONNECTION STATUS:</strong> TRACE DETECTED
+      </div>
+      <div class="intro-box"><strong>MISSION OBJECTIVE</strong><br><br>Recover more fragments<br>and bring Player 2 home.<br><br><span class="intro-red">AGENT CODENAME // HONEYBUN&lt;3</span></div>
+      <button id="introBeginTrace">BEGIN TRACE</button>
+    </section>
+
+    <section class="intro-screen" id="intro7">
+      <div class="intro-kicker">SECURE ACCESS // ACTIVE</div>
+      <div class="intro-title">DECRYPTING <span class="intro-red">ARCHIVE</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-terminal">
+        <div class="intro-terminal-head">SECURE ARCHIVE TERMINAL // CONNECTION TRACE</div>
+        <div id="introTerminalText"></div>
+        <div class="intro-progress"><div id="introDecryptFill"></div></div>
+        <div id="introDecryptPercent" style="margin-top:10px;color:#9aa5af;letter-spacing:2px;font-size:12px">DECRYPTION // 0%</div>
+      </div>
+    </section>
+
+    <section class="intro-screen" id="intro8">
+      <div class="intro-kicker">RECOVERED ARCHIVE // FILE 01 OF 05</div>
+      <div class="intro-title">CRUSH <span class="intro-red">DETECTED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-file"><div class="intro-file-date">FEBRUARY 10 // 2025</div><div class="intro-file-title">CONNECTION ANOMALY DETECTED</div><div class="intro-file-text">After a month of playing games, texting on Discord, and spending more time together...<br><br>something changed.<br><br>During a Fortnite match, while joking around, <span class="intro-red">Honeybun&lt;3 accidentally said out loud that he liked Player 2.</span></div></div>
+      <button id="introFile1">NEXT FILE</button>
+    </section>
+
+    <section class="intro-screen" id="intro9">
+      <div class="intro-kicker">RECOVERED ARCHIVE // FILE 02 OF 05</div>
+      <div class="intro-title">LOVE SIGNAL <span class="intro-red">RECEIVED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-file"><div class="intro-file-date">FEBRUARY 15 // 2025</div><div class="intro-file-title">SIGNAL INTENSITY INCREASED</div><div class="intro-file-text">The connection kept growing.<br><br>Five days later...<br><br><span class="intro-red">Honeybun&lt;3 said “I love you.”</span></div></div>
+      <button id="introFile2">NEXT FILE</button>
+    </section>
+
+    <section class="intro-screen" id="intro10">
+      <div class="intro-kicker">RECOVERED ARCHIVE // FILE 03 OF 05</div>
+      <div class="intro-title">LOVE SIGNAL <span class="intro-red">RETURNED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-file"><div class="intro-file-date">FEBRUARY 19 // 2025</div><div class="intro-file-title">MUTUAL SIGNAL CONFIRMED</div><div class="intro-file-text">Four days later...<br><br>Player 2 finally sent the signal back.<br><br><span class="intro-red">“I love you too.”</span></div></div>
+      <button id="introFile3">NEXT FILE</button>
+    </section>
+
+    <section class="intro-screen" id="intro11">
+      <div class="intro-kicker">RECOVERED ARCHIVE // FILE 04 OF 05</div>
+      <div class="intro-title">SIGNAL <span class="intro-red">STRENGTHENING</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-file"><div class="intro-file-date">CONNECTION ACTIVITY</div><div class="intro-file-title">DAILY SIGNAL EXCHANGE</div><div class="intro-file-text">Messages whenever possible.<br><br>Calls whenever possible.<br><br>Games together.<br><br>Cute pictures sent back and forth.<br><br>Two people trying to spend as much time together as distance allowed.</div></div>
+      <button id="introFile4">NEXT FILE</button>
+    </section>
+
+    <section class="intro-screen" id="intro12">
+      <div class="intro-kicker">RECOVERED ARCHIVE // FILE 05 OF 05</div>
+      <div class="intro-title">RELATIONSHIP STATUS <span class="intro-red">UPDATED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-file"><div class="intro-file-date">APRIL 12 // 2025</div><div class="intro-file-title">CONNECTION CLASSIFICATION CHANGED</div><div class="intro-file-text">After months of getting closer...<br><br>the connection was no longer undefined.<br><br><span class="intro-status">PLAYER 1 + PLAYER 2<br><br>OFFICIAL COUPLE</span></div></div>
+      <button id="introFile5">COMPLETE TRACE</button>
+    </section>
+
+    <section class="intro-screen" id="intro13">
+      <div class="intro-kicker">TRACE OPERATION // COMPLETE</div>
+      <div class="intro-title">CONNECTION <span class="intro-red">VERIFIED</span></div>
+      <div class="intro-line"></div>
+      <div class="intro-info">
+        <strong>AGENT:</strong> Honeybun&lt;3<br>
+        <strong>PLAYER 2:</strong> <span class="intro-red">STILL LOOKING</span><br>
+        <strong>CONNECTION:</strong> VERIFIED<br>
+        <strong>RELATIONSHIP STATUS:</strong> OFFICIAL
+      </div>
+      <div class="intro-box">CONNECTION TRACE COMPLETE.<br><br>Five archive fragments successfully recovered.<br><br>Connection history verified.<br><br>Player 2 remains missing.<br><br>But the recovered signal continues...<br><br><span class="intro-red">ADDITIONAL SIGNAL DETECTED...</span><br><br>NEW MISSION DATA AVAILABLE.</div>
+      <button id="introLaunchComic">CONTINUE MISSION</button>
+    </section>
+  </div>
+
+  <div class="app" id="comicApp" style="display:none">
     <div class="frame">
       <div class="topbar">
         <div class="brand">HONEYBUN // STORY LINK</div>
@@ -354,6 +590,95 @@
   <div class="toast" id="toast"></div>
 
   <script>
+
+    // ======================================================
+    // PRE-COMIC MISSION / ARCHIVE INTRO
+    // ======================================================
+    const introScreens = {};
+    for (let i=1;i<=13;i++) introScreens[i]=document.getElementById('intro'+i);
+    const introTransition=document.getElementById('introTransition');
+    const introTransitionTitle=document.getElementById('introTransitionTitle');
+    const introTransitionStatus=document.getElementById('introTransitionStatus');
+    const introTransitionFill=document.getElementById('introTransitionFill');
+    const introApp=document.getElementById('introApp');
+    const comicApp=document.getElementById('comicApp');
+
+    function introShow(from,to){
+      introScreens[from].classList.remove('active');
+      introScreens[to].classList.add('active');
+      window.scrollTo(0,0);
+    }
+    function introTransitionTo(from,to,title,status,after){
+      introTransitionTitle.textContent=title;
+      introTransitionStatus.textContent=status;
+      introTransitionFill.style.width='0%';
+      introTransition.classList.add('active');
+      let p=0;
+      const id=setInterval(()=>{p+=5; if(p>100)p=100; introTransitionFill.style.width=p+'%'; if(p>=100)clearInterval(id);},45);
+      setTimeout(()=>introShow(from,to),760);
+      setTimeout(()=>{introTransition.classList.remove('active'); if(after)after();},1120);
+    }
+
+    document.getElementById('introAccept').addEventListener('click',()=>introTransitionTo(1,2,'MISSION 01','LOADING INITIAL ARCHIVE'));
+    document.getElementById('introScan').addEventListener('click',()=>{
+      introTransitionTo(2,3,'ARCHIVE SEARCH','SCANNING MATCH DATA',()=>{
+        const bar=document.getElementById('introScanFill');
+        bar.style.width='0%'; setTimeout(()=>bar.style.width='100%',100);
+        setTimeout(()=>introTransitionTo(3,4,'MEMORY FOUND','RESTORING FIRST CONNECTION'),3000);
+      });
+    });
+    document.getElementById('introMemoryNext').addEventListener('click',()=>introTransitionTo(4,5,'ARCHIVE ACCESS','RECOVERING LOST FRAGMENTS'));
+    document.getElementById('introArchiveNext').addEventListener('click',()=>introTransitionTo(5,6,'MISSION 02','INITIALIZING CONNECTION TRACE'));
+
+    const introLines=[
+      '> INITIALIZING SECURE TRACE...',
+      '> AGENT HONEYBUN AUTHORIZED...',
+      '> ACCESSING CONNECTION ARCHIVE...',
+      '> BYPASSING CORRUPTED MEMORY SECTORS...',
+      '> SEARCHING PLAYER 2 SIGNAL...',
+      '> FRAGMENT 01 DETECTED...',
+      '> DECODING DISCORD COMMUNICATION LOGS...',
+      '> SEARCHING GAME SESSION RECORDS...',
+      '> LOVE SIGNAL DETECTED...',
+      '> RELATIONSHIP DATA FOUND...',
+      '> CONNECTION HISTORY VERIFIED...',
+      '> PLAYER 2 SIGNAL TRACE ACTIVE...',
+      '> ARCHIVE DECRYPTION COMPLETE.'
+    ];
+    function introDecrypt(){
+      introTransitionTo(6,7,'SECURE ACCESS','DECRYPTING CONNECTION ARCHIVE',()=>{
+        const out=document.getElementById('introTerminalText');
+        const fill=document.getElementById('introDecryptFill');
+        const pct=document.getElementById('introDecryptPercent');
+        out.innerHTML=''; fill.style.width='0%'; pct.textContent='DECRYPTION // 0%';
+        let p=0,i=0;
+        const id=setInterval(()=>{
+          p+=4;if(p>100)p=100; fill.style.width=p+'%'; pct.textContent='DECRYPTION // '+p+'%';
+          if(i<introLines.length){const d=document.createElement('div');d.textContent=introLines[i++];out.appendChild(d);}
+          if(p>=100){clearInterval(id);setTimeout(()=>introTransitionTo(7,8,'FILE 01 RECOVERED','OPENING CONNECTION ARCHIVE'),700);}
+        },170);
+      });
+    }
+    document.getElementById('introBeginTrace').addEventListener('click',introDecrypt);
+    document.getElementById('introFile1').addEventListener('click',()=>introTransitionTo(8,9,'FILE 02 RECOVERED','DECODING LOVE SIGNAL'));
+    document.getElementById('introFile2').addEventListener('click',()=>introTransitionTo(9,10,'FILE 03 RECOVERED','VERIFYING RETURN SIGNAL'));
+    document.getElementById('introFile3').addEventListener('click',()=>introTransitionTo(10,11,'FILE 04 RECOVERED','ANALYZING CONNECTION ACTIVITY'));
+    document.getElementById('introFile4').addEventListener('click',()=>introTransitionTo(11,12,'FINAL FILE RECOVERED','VERIFYING RELATIONSHIP STATUS'));
+    document.getElementById('introFile5').addEventListener('click',()=>introTransitionTo(12,13,'TRACE COMPLETE','VERIFYING CONNECTION DATA'));
+    document.getElementById('introLaunchComic').addEventListener('click',()=>{
+      introTransitionTitle.textContent='NEW SIGNAL PATH';
+      introTransitionStatus.textContent='OPENING VISUAL ARCHIVE';
+      introTransitionFill.style.width='0%';
+      introTransition.classList.add('active');
+      let p=0; const id=setInterval(()=>{p+=5;introTransitionFill.style.width=Math.min(p,100)+'%';if(p>=100)clearInterval(id);},45);
+      setTimeout(()=>{
+        introApp.style.display='none';
+        comicApp.style.display='flex';
+        storyIndex=0; afterMiniGame1=false; afterMiniGame2=false; renderScene(); window.scrollTo(0,0);
+      },760);
+      setTimeout(()=>introTransition.classList.remove('active'),1120);
+    });
+
     // The two white "mini game" images are storyboard placeholders only.
     // They remain in the folder as references, but the player never sees them.
     // scene22.jpg is replaced by Mini Game 1.
