@@ -1,2934 +1,670 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Valorant Mini Game</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honeybun Mission</title>
   <style>
-
-    * {
-      box-sizing: border-box;
+    :root {
+      --red:#ff4655;
+      --dark:#09111a;
+      --panel:#111922;
+      --muted:#9aa5af;
+      --line:#293642;
+      --green:#8cff7a;
     }
 
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      min-height: 100%;
-    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; background:#05090d; color:white; font-family:Arial,Helvetica,sans-serif; }
+    body { overflow-x:hidden; }
 
-    body {
-      min-height: 100vh;
-
+    .app {
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       background:
-        radial-gradient(
-          circle at center,
-          #15232d 0%,
-          #0f1923 55%,
-          #081018 100%
-        );
-
-      color: white;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      text-align: center;
-
-      overflow-x: hidden;
-
-      position: relative;
+        radial-gradient(circle at 50% 10%, rgba(255,70,85,.12), transparent 28%),
+        linear-gradient(#09111a,#05090d 70%);
+      padding:18px;
     }
 
-
-
-    /* ========================================= */
-    /* BACKGROUND EFFECTS */
-    /* ========================================= */
-
-    body::after {
-      content: "";
-
-      position: fixed;
-
-      inset: 0;
-
-      pointer-events: none;
-
-      z-index: 900;
-
-      background:
-        repeating-linear-gradient(
-          0deg,
-          rgba(255,255,255,0.018),
-          rgba(255,255,255,0.018) 1px,
-          transparent 1px,
-          transparent 4px
-        );
-
-      opacity: 0.55;
+    .frame {
+      width:min(1200px, 96vw);
+      min-height:92vh;
+      border:1px solid rgba(255,70,85,.55);
+      background:rgba(8,13,18,.96);
+      box-shadow:0 0 50px rgba(255,70,85,.12);
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
     }
 
-
-    .background-glow {
-      position: fixed;
-
-      width: 500px;
-      height: 500px;
-
-      border-radius: 50%;
-
-      background: #ff4655;
-
-      filter: blur(220px);
-
-      opacity: 0.08;
-
-      z-index: -1;
-
-      animation:
-        moveGlow 10s ease-in-out infinite alternate;
+    .frame::before {
+      content:"";
+      pointer-events:none;
+      position:absolute;
+      inset:0;
+      z-index:20;
+      background:repeating-linear-gradient(0deg,rgba(255,255,255,.018),rgba(255,255,255,.018) 1px,transparent 1px,transparent 4px);
+      mix-blend-mode:screen;
     }
 
-
-    @keyframes moveGlow {
-
-      from {
-        transform: translate(-250px, -150px);
-      }
-
-      to {
-        transform: translate(300px, 180px);
-      }
-
+    .topbar {
+      height:44px;
+      padding:0 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(255,70,85,.35);
+      background:#090f15;
+      letter-spacing:2px;
+      font-size:11px;
+      color:#b8c0c7;
+      z-index:5;
     }
 
+    .brand { color:var(--red); font-weight:800; }
+    .counter { color:#85919c; }
 
-
-    /* ========================================= */
-    /* GAME SCREENS */
-    /* ========================================= */
-
-    .screen {
-      display: none;
-
-      width: 90%;
-      max-width: 700px;
-
-      min-height: 420px;
-
-      background:
-        rgba(17,24,32,0.97);
-
-      border:
-        2px solid #ff4655;
-
-      padding: 45px;
-
-      margin: 30px 0;
-
-      box-shadow:
-        0 0 50px
-        rgba(255,70,85,0.13);
-
-      position: relative;
-
-      overflow: hidden;
+    #storyStage {
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      position:relative;
+      min-height:0;
     }
 
-
-    .screen.active {
-      display: block;
-
-      animation:
-        screenEnter
-        0.7s ease;
+    #storyImage {
+      display:block;
+      max-width:100%;
+      max-height:calc(92vh - 120px);
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:0 12px 36px rgba(0,0,0,.45);
+      opacity:1;
+      transform:scale(1);
     }
 
+    #storyImage.scene-enter { animation:sceneEnter .5s ease both; }
+    #storyImage.glitch-enter { animation:glitchIn .52s ease both; }
+    #storyImage.cinematic-enter { animation:cinematicIn .75s ease both; }
 
-    @keyframes screenEnter {
-
-      0% {
-        opacity: 0;
-
-        transform:
-          translateY(15px)
-          scale(0.985);
-
-        filter: blur(3px);
-      }
-
-      100% {
-        opacity: 1;
-
-        transform:
-          translateY(0)
-          scale(1);
-
-        filter: blur(0);
-      }
-
+    @keyframes sceneEnter {
+      from { opacity:0; transform:translateY(10px) scale(.985); filter:blur(3px); }
+      to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+    }
+    @keyframes cinematicIn {
+      from { opacity:0; transform:scale(1.035); filter:brightness(.4) blur(2px); }
+      to { opacity:1; transform:scale(1); filter:brightness(1) blur(0); }
+    }
+    @keyframes glitchIn {
+      0% { opacity:0; transform:translateX(-10px); filter:hue-rotate(40deg) contrast(1.5); }
+      25% { opacity:1; transform:translateX(8px); }
+      45% { transform:translateX(-4px); filter:hue-rotate(-30deg) contrast(1.25); }
+      70% { transform:translateX(3px); }
+      100% { transform:translateX(0); filter:none; }
     }
 
-
-    .screen::before {
-      content: "";
-
-      position: absolute;
-
-      left: 0;
-      top: -5px;
-
-      width: 100%;
-      height: 3px;
-
-      background:
-        linear-gradient(
-          90deg,
-          transparent,
-          #ff4655,
-          transparent
-        );
-
-      opacity: 0.7;
-
-      animation:
-        scannerLine
-        4s linear infinite;
+    .controls {
+      height:58px;
+      border-top:1px solid rgba(255,70,85,.28);
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding:0 16px;
+      gap:10px;
+      background:#090f15;
+      z-index:5;
     }
-
-
-    @keyframes scannerLine {
-
-      from {
-        transform:
-          translateY(0);
-      }
-
-      to {
-        transform:
-          translateY(700px);
-      }
-
-    }
-
-
-
-    /* ========================================= */
-    /* TEXT */
-    /* ========================================= */
-
-    .small-title {
-      color: #ff4655;
-
-      letter-spacing: 4px;
-
-      font-size: 12px;
-    }
-
-
-    h1 {
-      letter-spacing: 4px;
-
-      font-size: 38px;
-
-      margin:
-        15px 0;
-    }
-
-
-    h2 {
-      letter-spacing: 3px;
-    }
-
-
-    .red {
-      color: #ff4655;
-    }
-
-
-    .line {
-      width: 100%;
-
-      height: 2px;
-
-      background: #ff4655;
-
-      margin:
-        25px 0;
-
-      opacity: 0.5;
-    }
-
-
-    .info {
-      color: #aab3bb;
-
-      line-height: 2;
-
-      font-size: 15px;
-
-      text-align: left;
-    }
-
-
-    .info strong {
-      color: white;
-    }
-
-
-    .objective {
-      margin-top: 25px;
-
-      padding: 20px;
-
-      background:
-        rgba(255,255,255,0.03);
-
-      border-left:
-        3px solid #ff4655;
-
-      line-height: 1.7;
-
-      text-align: left;
-    }
-
-
-
-    /* ========================================= */
-    /* BUTTONS */
-    /* ========================================= */
 
     button {
-      margin-top: 30px;
+      border:0;
+      background:var(--red);
+      color:white;
+      font-weight:800;
+      letter-spacing:1.5px;
+      padding:12px 18px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    button:hover { background:white; color:var(--red); transform:translateY(-1px); }
+    button.secondary { background:#17222c; color:#d9e0e6; border:1px solid #34424e; }
+    button.secondary:hover { color:white; border-color:var(--red); }
 
+    .overlay {
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      background:rgba(4,8,12,.96);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .overlay.active { display:flex; animation:fade .22s ease; }
+    @keyframes fade { from {opacity:0} to {opacity:1} }
+
+    .gamepanel {
+      width:min(900px,95vw);
+      min-height:560px;
+      border:1px solid var(--red);
+      background:linear-gradient(180deg,#0d151d,#080d12);
+      box-shadow:0 0 60px rgba(255,70,85,.15);
+      position:relative;
+      padding:28px;
+      overflow:hidden;
+    }
+    .gamepanel::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 5px,rgba(255,70,85,.025) 6px);
+    }
+
+    .eyebrow { color:var(--red); font-size:11px; letter-spacing:4px; font-weight:800; }
+    .title { font-size:clamp(34px,6vw,68px); line-height:.95; margin:10px 0 18px; letter-spacing:2px; }
+    .sub { color:var(--muted); line-height:1.7; max-width:700px; }
+
+    /* MINI GAME 1 */
+    .defuse-layout {
+      display:grid;
+      grid-template-columns:1fr 1.25fr;
+      gap:28px;
+      margin-top:28px;
+      align-items:center;
+    }
+    .spike {
+      width:min(280px,70vw);
+      height:350px;
+      margin:auto;
+      border:2px solid #742a31;
+      position:relative;
       background:
-        #ff4655;
-
-      color:
-        white;
-
-      border:
-        none;
-
-      padding:
-        16px 35px;
-
-      font-size:
-        15px;
-
-      font-weight:
-        bold;
-
-      letter-spacing:
-        2px;
-
-      cursor:
-        pointer;
-
-      transition:
-        0.2s ease;
-
-      position:
-        relative;
-
-      overflow:
-        hidden;
+        linear-gradient(90deg,transparent 47%,rgba(255,70,85,.18) 48% 52%,transparent 53%),
+        linear-gradient(180deg,#161d25,#080c11);
+      clip-path:polygon(20% 0,80% 0,100% 18%,88% 100%,12% 100%,0 18%);
+      box-shadow:inset 0 0 40px rgba(255,70,85,.14),0 0 25px rgba(255,70,85,.16);
     }
-
-
-    button:hover {
-      background:
-        white;
-
-      color:
-        #ff4655;
-
-      transform:
-        translateY(-2px);
-
-      box-shadow:
-        0 0 25px
-        rgba(255,70,85,0.4);
+    .spike-core {
+      position:absolute;
+      inset:72px 70px;
+      background:linear-gradient(#ff7b84,#b91020 60%,#560710);
+      border:3px solid #ff4655;
+      box-shadow:0 0 35px rgba(255,70,85,.6),inset 0 0 20px rgba(255,255,255,.18);
     }
+    .node { position:absolute; width:18px; height:18px; border:2px solid var(--red); background:#0a1117; box-shadow:0 0 12px rgba(255,70,85,.5); animation:pulse 1s infinite alternate; }
+    .n1{left:35px;top:52px}.n2{right:35px;top:52px}.n3{left:35px;bottom:52px}.n4{right:35px;bottom:52px}
+    @keyframes pulse { from{opacity:.35} to{opacity:1} }
 
+    .timer { font-size:54px; font-weight:900; color:var(--red); letter-spacing:3px; margin:12px 0; }
+    .defuse-track { width:100%; height:14px; border:1px solid #32404c; background:#111b24; margin:16px 0; overflow:hidden; }
+    #defuseFill { height:100%; width:0%; background:linear-gradient(90deg,var(--red),#ff9aa2); }
+    #holdDefuse { width:100%; user-select:none; touch-action:none; }
+    .statusline { margin-top:12px; color:#aab4bd; min-height:24px; }
 
-    button:disabled {
-      opacity: 0.7;
-
-      cursor: default;
-
-      transform: none;
+    /* MINI GAME 2 */
+    .search-wrap {
+      display:grid;
+      grid-template-columns:200px 1fr;
+      gap:22px;
+      margin-top:24px;
     }
-
-
-
-    /* ========================================= */
-    /* LOADING BAR */
-    /* ========================================= */
-
-    .loading-container {
-      width: 100%;
-
-      height: 8px;
-
-      background:
-        #27323b;
-
-      margin-top:
-        30px;
-
-      overflow:
-        hidden;
+    .floor-list { display:flex; flex-direction:column; gap:10px; }
+    .floor-btn { width:100%; text-align:left; background:#101923; border:1px solid #2d3a45; color:#dce3e8; }
+    .floor-btn.active { border-color:var(--red); color:white; background:#21151a; }
+    .store-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .store-card {
+      border:1px solid #31404b;
+      background:rgba(255,255,255,.025);
+      padding:18px;
+      text-align:left;
+      cursor:pointer;
+      min-height:110px;
+      transition:.18s ease;
     }
+    .store-card:hover { border-color:var(--red); transform:translateY(-2px); }
+    .store-name { font-weight:800; letter-spacing:1px; }
+    .store-hint { color:#81909b; font-size:12px; margin-top:8px; }
+    .signal-box { margin-top:20px; padding:18px; border-left:3px solid var(--red); background:rgba(255,70,85,.05); color:#d4dce2; min-height:72px; }
+    .meter { display:flex; gap:5px; margin-top:10px; }
+    .meter span { height:8px; flex:1; background:#1d2933; }
+    .meter span.on { background:var(--red); box-shadow:0 0 12px rgba(255,70,85,.5); }
 
-
-    .loading-bar {
-      width: 0%;
-
-      height: 100%;
-
-      background:
-        linear-gradient(
-          90deg,
-          #ff4655,
-          #ff7b85,
-          #ff4655
-        );
-
-      transition:
-        width 2.5s ease;
+    .success {
+      margin-top:24px;
+      border:1px solid #4ec95a;
+      background:rgba(78,201,90,.07);
+      padding:20px;
+      display:none;
     }
+    .success.show { display:block; animation:sceneEnter .4s ease; }
+    .success strong { color:var(--green); }
 
-
-
-    /* ========================================= */
-    /* MEMORY BOX */
-    /* ========================================= */
-
-    .memory-box {
-      border:
-        1px solid #ff4655;
-
-      padding:
-        28px;
-
-      background:
-        rgba(255,70,85,0.05);
+    .toast {
+      position:fixed;
+      left:50%;
+      bottom:26px;
+      transform:translateX(-50%);
+      background:#0d151c;
+      border:1px solid var(--red);
+      color:white;
+      padding:12px 18px;
+      z-index:2000;
+      display:none;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
     }
+    .toast.show { display:block; animation:fade .2s ease; }
 
-
-    .memory-title {
-      color:
-        #ff4655;
-
-      letter-spacing:
-        3px;
-
-      font-size:
-        13px;
-
-      margin-bottom:
-        20px;
+    @media (max-width:760px) {
+      .app { padding:0; }
+      .frame { width:100vw; min-height:100vh; border-left:0; border-right:0; }
+      .topbar { height:40px; }
+      #storyStage { padding:8px; }
+      #storyImage { max-height:calc(100vh - 110px); }
+      .controls { height:62px; }
+      .gamepanel { min-height:auto; padding:20px; }
+      .defuse-layout { grid-template-columns:1fr; }
+      .spike { height:260px; width:210px; }
+      .spike-core { inset:55px 52px; }
+      .search-wrap { grid-template-columns:1fr; }
+      .floor-list { display:grid; grid-template-columns:repeat(2,1fr); }
+      .store-grid { grid-template-columns:1fr; }
     }
-
-
-    .memory-text {
-      line-height:
-        1.9;
-
-      font-size:
-        17px;
-    }
-
-
-    .connection {
-      color:
-        #ff4655;
-
-      font-weight:
-        bold;
-
-      letter-spacing:
-        2px;
-    }
-
-
-
-    /* ========================================= */
-    /* ARCHIVE SUMMARY */
-    /* ========================================= */
-
-    .archive-summary {
-      border:
-        1px solid #ff4655;
-
-      padding:
-        25px;
-
-      background:
-        rgba(255,70,85,0.05);
-
-      text-align:
-        left;
-
-      line-height:
-        2;
-    }
-
-
-    .archive-status {
-      color:
-        #ff4655;
-
-      font-weight:
-        bold;
-
-      letter-spacing:
-        2px;
-    }
-
-
-
-    /* ========================================= */
-    /* FILE CARDS */
-    /* ========================================= */
-
-    .file-card {
-      text-align:
-        left;
-
-      border-left:
-        3px solid #ff4655;
-
-      background:
-        rgba(255,255,255,0.035);
-
-      padding:
-        25px;
-
-      margin-top:
-        20px;
-
-      animation:
-        fileReveal
-        0.65s ease;
-    }
-
-
-    @keyframes fileReveal {
-
-      from {
-        opacity: 0;
-
-        transform:
-          translateY(18px);
-      }
-
-      to {
-        opacity: 1;
-
-        transform:
-          translateY(0);
-      }
-
-    }
-
-
-    .date {
-      color:
-        #ff4655;
-
-      font-size:
-        12px;
-
-      letter-spacing:
-        3px;
-
-      font-weight:
-        bold;
-    }
-
-
-    .event-title {
-      color:
-        white;
-
-      font-size:
-        21px;
-
-      font-weight:
-        bold;
-
-      margin-top:
-        10px;
-    }
-
-
-    .event-text {
-      color:
-        #aab3bb;
-
-      margin-top:
-        15px;
-
-      line-height:
-        1.8;
-
-      font-size:
-        15px;
-    }
-
-
-    .official-card {
-      border:
-        1px solid #ff4655;
-
-      background:
-        rgba(255,70,85,0.08);
-
-      padding:
-        28px;
-
-      text-align:
-        left;
-
-      margin-top:
-        20px;
-    }
-
-
-
-    /* ========================================= */
-    /* HACKER TERMINAL */
-    /* ========================================= */
-
-    #decryptConsole {
-      background:
-        #05090d;
-
-      border:
-        1px solid #ff4655;
-
-      padding:
-        20px;
-
-      text-align:
-        left;
-
-      font-family:
-        "Courier New",
-        monospace;
-
-      color:
-        #ff4655;
-
-      min-height:
-        270px;
-
-      box-shadow:
-        inset 0 0 30px
-        rgba(255,70,85,0.08),
-
-        0 0 20px
-        rgba(255,70,85,0.08);
-    }
-
-
-    .terminal-header {
-      color:
-        white;
-
-      font-size:
-        12px;
-
-      letter-spacing:
-        2px;
-
-      border-bottom:
-        1px solid #27323b;
-
-      padding-bottom:
-        12px;
-
-      margin-bottom:
-        15px;
-    }
-
-
-    #terminalText {
-      line-height:
-        1.7;
-
-      font-size:
-        13px;
-
-      min-height:
-        160px;
-    }
-
-
-    .terminal-line {
-      animation:
-        terminalFlash
-        0.2s;
-    }
-
-
-    @keyframes terminalFlash {
-
-      from {
-        opacity: 0;
-
-        transform:
-          translateX(-5px);
-      }
-
-      to {
-        opacity: 1;
-
-        transform:
-          translateX(0);
-      }
-
-    }
-
-
-    .decrypt-progress {
-      width:
-        100%;
-
-      height:
-        6px;
-
-      background:
-        #1a242d;
-
-      margin-top:
-        18px;
-    }
-
-
-    #decryptBar {
-      width:
-        0%;
-
-      height:
-        100%;
-
-      background:
-        #ff4655;
-
-      transition:
-        width
-        0.2s linear;
-    }
-
-
-    #decryptPercent {
-      margin-top:
-        10px;
-
-      font-size:
-        12px;
-
-      color:
-        #aab3bb;
-
-      letter-spacing:
-        2px;
-    }
-
-
-
-    /* ========================================= */
-    /* TRANSITION OVERLAY */
-    /* ========================================= */
-
-    #transitionOverlay {
-      display:
-        none;
-
-      position:
-        fixed;
-
-      inset:
-        0;
-
-      z-index:
-        2000;
-
-      background:
-        #080d12;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      flex-direction:
-        column;
-
-      padding:
-        30px;
-    }
-
-
-    #transitionOverlay.active {
-      display:
-        flex;
-    }
-
-
-    .transition-small {
-      color:
-        #ff4655;
-
-      letter-spacing:
-        5px;
-
-      font-size:
-        11px;
-
-      margin-bottom:
-        15px;
-    }
-
-
-    #transitionTitle {
-      font-size:
-        30px;
-
-      letter-spacing:
-        6px;
-
-      font-weight:
-        bold;
-
-      animation:
-        glitchTitle
-        0.65s infinite;
-    }
-
-
-    @keyframes glitchTitle {
-
-      0%,
-      88%,
-      100% {
-        transform:
-          translate(0);
-
-        text-shadow:
-          none;
-      }
-
-      91% {
-        transform:
-          translate(-2px, 1px);
-
-        text-shadow:
-          3px 0 #ff4655,
-          -3px 0 #71d7ff;
-      }
-
-      95% {
-        transform:
-          translate(2px, -1px);
-      }
-
-    }
-
-
-    .transition-bar {
-      width:
-        280px;
-
-      max-width:
-        70vw;
-
-      height:
-        5px;
-
-      background:
-        #202a33;
-
-      margin-top:
-        30px;
-    }
-
-
-    #transitionBarFill {
-      width:
-        0%;
-
-      height:
-        100%;
-
-      background:
-        #ff4655;
-    }
-
-
-    #transitionStatus {
-      color:
-        #8f9aa4;
-
-      font-size:
-        11px;
-
-      letter-spacing:
-        3px;
-
-      margin-top:
-        13px;
-    }
-
-
-
-    /* ========================================= */
-    /* GLITCH FLASH */
-    /* ========================================= */
-
-    #glitchFlash {
-      pointer-events:
-        none;
-
-      position:
-        fixed;
-
-      inset:
-        0;
-
-      z-index:
-        2500;
-
-      opacity:
-        0;
-
-      background:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 8px,
-          rgba(255,70,85,0.15) 9px,
-          transparent 10px
-        );
-    }
-
-
-    #glitchFlash.flash {
-      animation:
-        glitchFlash
-        0.27s linear;
-    }
-
-
-    @keyframes glitchFlash {
-
-      0% {
-        opacity: 0;
-      }
-
-      20% {
-        opacity: 1;
-
-        transform:
-          translateX(-8px);
-      }
-
-      45% {
-        opacity: 0.3;
-
-        transform:
-          translateX(6px);
-      }
-
-      70% {
-        opacity: 0.8;
-
-        transform:
-          translateX(-3px);
-      }
-
-      100% {
-        opacity: 0;
-
-        transform:
-          translateX(0);
-      }
-
-    }
-
-
-
-    /* ========================================= */
-    /* MOBILE */
-    /* ========================================= */
-
-    @media (max-width: 600px) {
-
-      .screen {
-        padding:
-          30px 22px;
-      }
-
-      h1 {
-        font-size:
-          27px;
-      }
-
-      button {
-        width:
-          100%;
-      }
-
-      #transitionTitle {
-        font-size:
-          21px;
-
-        letter-spacing:
-          4px;
-      }
-
-    }
-
   </style>
 </head>
-
-
 <body>
-
-
-<div class="background-glow"></div>
-
-
-<!-- ========================================= -->
-<!-- TRANSITION -->
-<!-- ========================================= -->
-
-<div id="transitionOverlay">
-
-  <div class="transition-small">
-
-    SECURE SYSTEM // PROCESSING
-
-  </div>
-
-
-  <div id="transitionTitle">
-
-    ACCESSING...
-
-  </div>
-
-
-  <div class="transition-bar">
-
-    <div id="transitionBarFill"></div>
-
-  </div>
-
-
-  <div id="transitionStatus">
-
-    PLEASE STAND BY
-
-  </div>
-
-</div>
-
-
-<div id="glitchFlash"></div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 1 -->
-<!-- OPENING -->
-<!-- ========================================= -->
-
-<div class="screen active" id="screen1">
-
-  <div class="small-title">
-
-    CLASSIFIED // SPECIAL OPERATION
-
-  </div>
-
-
-  <h1>
-
-    MISSION
-
-    <span class="red">
-
-      AVAILABLE
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="info">
-
-    <strong>
-      PLAYER 1:
-    </strong>
-
-    Honeybun&lt;3
-
-    <br>
-
-    <strong>
-      PLAYER 2:
-    </strong>
-
-    CONNECTION LOST
-
-    <br><br>
-
-    <strong>
-      OBJECTIVE:
-    </strong>
-
-    <br>
-
-    FIND PLAYER 2
-
-  </div>
-
-
-  <button id="acceptButton">
-
-    ACCEPT MISSION
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 2 -->
-<!-- MISSION 01 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen2">
-
-  <div class="small-title">
-
-    MISSION 01 // INITIAL ARCHIVE
-
-  </div>
-
-
-  <h1>
-
-    THE
-
-    <span class="red">
-
-      MATCH
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="info">
-
-    <strong>
-      PLAYER:
-    </strong>
-
-    Honeybun&lt;3
-
-    <br>
-
-    <strong>
-      DATE:
-    </strong>
-
-    January 7, 2025
-
-    <br>
-
-    <strong>
-      SOURCE:
-    </strong>
-
-    Valorant Match
-
-    <br>
-
-    <strong>
-      MAP:
-    </strong>
-
-    DATA LOST
-
-    <br>
-
-    <strong>
-      AGENTS MISSING:
-    </strong>
-
-    <span class="red">
-
-      YOUR OTHER HALF
-
-    </span>
-
-  </div>
-
-
-  <div class="objective">
-
-    <strong>
-      MISSION OBJECTIVE
-    </strong>
-
-    <br><br>
-
-    Scan the archived match data.
-
-    <br>
-
-    Recover the first connection.
-
-  </div>
-
-
-  <button id="scanButton">
-
-    SCAN MATCH DATA
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 3 -->
-<!-- SCANNING -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen3">
-
-  <div class="small-title">
-
-    ARCHIVE SEARCH // ACTIVE
-
-  </div>
-
-
-  <h1>
-
-    SCANNING
-
-    <span class="red">
-
-      MATCH DATA
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="info">
-
-    Searching archived game session...
-
-    <br>
-
-    Locating first connection...
-
-    <br>
-
-    Recovering damaged memory data...
-
-  </div>
-
-
-  <div class="loading-container">
-
-    <div
-      class="loading-bar"
-      id="mission1LoadingBar"
-    ></div>
-
-  </div>
-
-
-  <div class="objective">
-
-    PLEASE WAIT...
-
-  </div>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 4 -->
-<!-- MEMORY RECOVERED -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen4">
-
-  <div class="small-title">
-
-    MEMORY FILE // PARTIALLY RESTORED
-
-  </div>
-
-
-  <h1>
-
-    MEMORY
-
-    <span class="red">
-
-      RECOVERED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="memory-box">
-
-    <div class="memory-title">
-
-      FIRST CONNECTION DATA
-
+  <div class="app">
+    <div class="frame">
+      <div class="topbar">
+        <div class="brand">HONEYBUN // STORY LINK</div>
+        <div class="counter" id="counter">01 / 25</div>
+      </div>
+
+      <div id="storyStage">
+        <img id="storyImage" src="scene01.jpg" alt="Story scene" />
+      </div>
+
+      <div class="controls">
+        <button id="nextBtn">NEXT</button>
+      </div>
     </div>
+  </div>
 
+  <!-- MINI GAME 1 -->
+  <div class="overlay" id="game1Overlay">
+    <div class="gamepanel">
+      <div class="eyebrow">MINI GAME 01 // SPIKE PROTOCOL</div>
+      <div class="title">DEFUSE THE <span style="color:var(--red)">SPIKE</span></div>
+      <div class="sub">Hold the defuse control until the progress bar reaches 100%. Releasing early resets the defuse. The mission clock is still running.</div>
 
-    <div class="memory-text">
-
-      The map is gone.
-
-      <br><br>
-
-      The details blurry.
-
-      <br><br>
-
-      But, something is always on your mind...
-
-      <br><br>
-
-
-      <span class="red">
-
-        Your other half.
-
-      </span>
-
-
-      <br><br>
-
-      And out of all the assigned partners
-      you could have gotten that day,
-
-      <br>
-
-      you got that special person.
-
-      <br><br>
-
-
-      <span class="connection">
-
-        FIRST CONNECTION //
-        JANUARY 7, 2025
-
-      </span>
-
+      <div class="defuse-layout">
+        <div class="spike">
+          <div class="spike-core"></div>
+          <div class="node n1"></div><div class="node n2"></div><div class="node n3"></div><div class="node n4"></div>
+        </div>
+        <div>
+          <div class="eyebrow">TIME REMAINING</div>
+          <div class="timer" id="defuseTimer">00:45</div>
+          <div class="defuse-track"><div id="defuseFill"></div></div>
+          <button id="holdDefuse">HOLD TO DEFUSE</button>
+          <div class="statusline" id="defuseStatus">DEFUSE LINK READY.</div>
+          <div class="success" id="game1Success">
+            <strong>SPIKE DEFUSED.</strong><br><br>
+            Coordinate lock stabilized. Continue the mission.
+            <br><br><button id="game1Continue">CONTINUE</button>
+          </div>
+          <button class="secondary" id="retryDefuse" style="display:none">RETRY</button>
+        </div>
+      </div>
     </div>
-
   </div>
 
-
-  <button id="memoryContinueButton">
-
-    CONTINUE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 5 -->
-<!-- ARCHIVE FRAGMENTS -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen5">
-
-  <div class="small-title">
-
-    ARCHIVE SCAN // COMPLETE
-
-  </div>
-
-
-  <h1>
-
-    ARCHIVE FRAGMENTS
-
-    <span class="red">
-
-      RECOVERED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="archive-summary">
-
-    <strong>
-      FIRST CONNECTION:
-    </strong>
-
-    RECOVERED
-
-    <br>
-
-
-    <strong>
-      PLAYER 1:
-    </strong>
-
-    Honeybun&lt;3
-
-    <br>
-
-
-    <strong>
-      PLAYER 2:
-    </strong>
-
-
-    <span class="red">
-
-      STILL LOOKING
-
-    </span>
-
-
-    <br><br>
-
-
-    <strong>
-      MEMORY FILES FOUND:
-    </strong>
-
-    5
-
-    <br>
-
-
-    <strong>
-      CONNECTION HISTORY FOUND:
-    </strong>
-
-    1
-
-    <br><br>
-
-
-    <span class="archive-status">
-
-      STATUS: DECRYPTABLE
-
-    </span>
-
-  </div>
-
-
-  <div class="objective">
-
-    Additional data linked to the first connection
-    has been found.
-
-    <br><br>
-
-    Player 2's current location remains unknown.
-
-    <br><br>
-
-    However...
-
-    <br><br>
-
-    the recovered files contain traces
-    of a previous connection.
-
-  </div>
-
-
-  <button id="archiveButton">
-
-    ACCESS RECOVERED FILES
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 6 -->
-<!-- MISSION 02 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen6">
-
-  <div class="small-title">
-
-    MISSION 02 // TRACE THE CONNECTION
-
-  </div>
-
-
-  <h1>
-
-    TRACE THE
-
-    <span class="red">
-
-      CONNECTION
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="info">
-
-    <strong>
-      AGENT CODENAME:
-    </strong>
-
-    Honeybun&lt;3
-
-    <br>
-
-
-    <strong>
-      TARGET:
-    </strong>
-
-    Player 2
-
-    <br>
-
-
-    <strong>
-      PRIMARY CHANNEL:
-    </strong>
-
-    Discord
-
-    <br>
-
-
-    <strong>
-      SHARED ACTIVITY:
-    </strong>
-
-    Gaming
-
-    <br>
-
-
-    <strong>
-      COMMUNICATION:
-    </strong>
-
-    Messages / Calls
-
-    <br>
-
-
-    <strong>
-      CONNECTION STATUS:
-    </strong>
-
-    TRACE DETECTED
-
-  </div>
-
-
-  <div class="objective">
-
-    <strong>
-      MISSION OBJECTIVE
-    </strong>
-
-    <br><br>
-
-    Recover more fragments
-
-    <br>
-
-    and bring Player 2 home.
-
-    <br><br>
-
-
-    <span class="red">
-
-      AGENT CODENAME //
-      HONEYBUN&lt;3
-
-    </span>
-
-  </div>
-
-
-  <button id="beginTraceButton">
-
-    BEGIN TRACE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 7 -->
-<!-- DECRYPTING -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen7">
-
-  <div class="small-title">
-
-    SECURE ACCESS // ACTIVE
-
-  </div>
-
-
-  <h1>
-
-    DECRYPTING
-
-    <span class="red">
-
-      ARCHIVE
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div id="decryptConsole">
-
-    <div class="terminal-header">
-
-      SECURE ARCHIVE TERMINAL //
-      CONNECTION TRACE
-
+  <!-- MINI GAME 2 -->
+  <div class="overlay" id="game2Overlay">
+    <div class="gamepanel">
+      <div class="eyebrow">MINI GAME 02 // ENDLESS MALL SEARCH</div>
+      <div class="title">FIND <span style="color:var(--red)">PLAYER 2</span></div>
+      <div class="sub">The coordinates brought you here, but they do not identify the floor or store. Search the mall. The signal meter will tell you when you are getting closer.</div>
+
+      <div class="search-wrap">
+        <div class="floor-list" id="floorList"></div>
+        <div>
+          <div class="store-grid" id="storeGrid"></div>
+          <div class="signal-box" id="signalBox">
+            Select a floor and search a location.
+            <div class="meter" id="signalMeter"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="success" id="game2Success">
+            <strong>PLAYER 2 SIGNAL FOUND.</strong><br><br>
+            Final coordinates confirmed. Reunion path unlocked.
+            <br><br><button id="game2Continue">GO TO PLAYER 2</button>
+          </div>
+        </div>
+      </div>
     </div>
-
-
-    <div id="terminalText"></div>
-
-
-    <div class="decrypt-progress">
-
-      <div id="decryptBar"></div>
-
-    </div>
-
-
-    <div id="decryptPercent">
-
-      DECRYPTION // 0%
-
-    </div>
-
   </div>
 
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 8 -->
-<!-- FILE 01 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen8">
-
-  <div class="small-title">
-
-    RECOVERED ARCHIVE // FILE 01 OF 05
-
-  </div>
-
-
-  <h1>
-
-    CRUSH
-
-    <span class="red">
-
-      DETECTED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="file-card">
-
-    <div class="date">
-
-      FEBRUARY 10 // 2025
-
-    </div>
-
-
-    <div class="event-title">
-
-      CONNECTION ANOMALY DETECTED
-
-    </div>
-
-
-    <div class="event-text">
-
-      After a month of playing games,
-      texting on Discord,
-      and spending more time together...
-
-      <br><br>
-
-      something changed.
-
-      <br><br>
-
-      During a Fortnite match,
-      while joking around,
-
-
-      <span class="red">
-
-        Honeybun&lt;3 accidentally said out loud
-        that he liked Player 2.
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <button id="file1Button">
-
-    NEXT FILE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 9 -->
-<!-- FILE 02 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen9">
-
-  <div class="small-title">
-
-    RECOVERED ARCHIVE // FILE 02 OF 05
-
-  </div>
-
-
-  <h1>
-
-    LOVE SIGNAL
-
-    <span class="red">
-
-      RECEIVED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="file-card">
-
-    <div class="date">
-
-      FEBRUARY 15 // 2025
-
-    </div>
-
-
-    <div class="event-title">
-
-      SIGNAL INTENSITY INCREASED
-
-    </div>
-
-
-    <div class="event-text">
-
-      The connection kept growing.
-
-      <br><br>
-
-      Five days later...
-
-      <br><br>
-
-
-      <span class="red">
-
-        Honeybun&lt;3 said
-        "I love you."
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <button id="file2Button">
-
-    NEXT FILE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 10 -->
-<!-- FILE 03 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen10">
-
-  <div class="small-title">
-
-    RECOVERED ARCHIVE // FILE 03 OF 05
-
-  </div>
-
-
-  <h1>
-
-    LOVE SIGNAL
-
-    <span class="red">
-
-      RETURNED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="file-card">
-
-    <div class="date">
-
-      FEBRUARY 19 // 2025
-
-    </div>
-
-
-    <div class="event-title">
-
-      MUTUAL SIGNAL CONFIRMED
-
-    </div>
-
-
-    <div class="event-text">
-
-      Four days later...
-
-      <br><br>
-
-      Player 2 finally sent the signal back.
-
-      <br><br>
-
-
-      <span class="red">
-
-        "I love you too."
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <button id="file3Button">
-
-    NEXT FILE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 11 -->
-<!-- FILE 04 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen11">
-
-  <div class="small-title">
-
-    RECOVERED ARCHIVE // FILE 04 OF 05
-
-  </div>
-
-
-  <h1>
-
-    SIGNAL
-
-    <span class="red">
-
-      STRENGTHENING
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="file-card">
-
-    <div class="date">
-
-      CONNECTION ACTIVITY
-
-    </div>
-
-
-    <div class="event-title">
-
-      DAILY SIGNAL EXCHANGE
-
-    </div>
-
-
-    <div class="event-text">
-
-      Messages whenever possible.
-
-      <br><br>
-
-      Calls whenever possible.
-
-      <br><br>
-
-      Games together.
-
-      <br><br>
-
-      Cute pictures sent back and forth.
-
-      <br><br>
-
-      Two people trying to spend
-      as much time together
-      as distance allowed.
-
-    </div>
-
-  </div>
-
-
-  <button id="file4Button">
-
-    NEXT FILE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 12 -->
-<!-- FILE 05 -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen12">
-
-  <div class="small-title">
-
-    RECOVERED ARCHIVE // FILE 05 OF 05
-
-  </div>
-
-
-  <h1>
-
-    RELATIONSHIP STATUS
-
-    <span class="red">
-
-      UPDATED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="official-card">
-
-    <div class="date">
-
-      APRIL 12 // 2025
-
-    </div>
-
-
-    <div class="event-title">
-
-      CONNECTION CLASSIFICATION CHANGED
-
-    </div>
-
-
-    <div class="event-text">
-
-      After months of getting closer...
-
-      <br><br>
-
-      the connection was no longer undefined.
-
-      <br><br>
-
-
-      <span class="connection">
-
-        PLAYER 1 + PLAYER 2
-
-        <br><br>
-
-        OFFICIAL COUPLE
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <button id="file5Button">
-
-    COMPLETE TRACE
-
-  </button>
-
-</div>
-
-
-
-<!-- ========================================= -->
-<!-- SCREEN 13 -->
-<!-- MISSION 02 COMPLETE -->
-<!-- ========================================= -->
-
-<div class="screen" id="screen13">
-
-  <div class="small-title">
-
-    TRACE OPERATION // COMPLETE
-
-  </div>
-
-
-  <h1>
-
-    CONNECTION
-
-    <span class="red">
-
-      VERIFIED
-
-    </span>
-
-  </h1>
-
-
-  <div class="line"></div>
-
-
-  <div class="info">
-
-    <strong>
-      AGENT:
-    </strong>
-
-    Honeybun&lt;3
-
-    <br>
-
-
-    <strong>
-      PLAYER 2:
-    </strong>
-
-
-    <span class="red">
-
-      STILL LOOKING
-
-    </span>
-
-
-    <br>
-
-
-    <strong>
-      CONNECTION:
-    </strong>
-
-    VERIFIED
-
-    <br>
-
-
-    <strong>
-      RELATIONSHIP STATUS:
-    </strong>
-
-    OFFICIAL
-
-  </div>
-
-
-  <div class="objective">
-
-    CONNECTION TRACE COMPLETE.
-
-    <br><br>
-
-    Five archive fragments successfully recovered.
-
-    <br><br>
-
-    Connection history verified.
-
-    <br><br>
-
-    Player 2 remains missing.
-
-    <br><br>
-
-    But the recovered signal continues...
-
-    <br><br>
-
-
-    <span class="red">
-
-      ADDITIONAL SIGNAL DETECTED...
-
-    </span>
-
-
-    <br><br>
-
-    NEW MISSION DATA AVAILABLE
-
-    <br><br>
-
-    STATUS: LOCKED
-
-  </div>
-
-</div>
-
-
-
-<script>
-
-  /* ========================================= */
-  /* SCREENS */
-  /* ========================================= */
-
-  const screens = {};
-
-  for (let i = 1; i <= 13; i++) {
-
-    screens[i] =
-      document.getElementById(
-        "screen" + i
-      );
-
-  }
-
-
-
-  /* ========================================= */
-  /* TRANSITION ELEMENTS */
-  /* ========================================= */
-
-  const transitionOverlay =
-    document.getElementById(
-      "transitionOverlay"
-    );
-
-  const transitionTitle =
-    document.getElementById(
-      "transitionTitle"
-    );
-
-  const transitionStatus =
-    document.getElementById(
-      "transitionStatus"
-    );
-
-  const transitionBarFill =
-    document.getElementById(
-      "transitionBarFill"
-    );
-
-  const glitchFlash =
-    document.getElementById(
-      "glitchFlash"
-    );
-
-
-
-  /* ========================================= */
-  /* GLITCH */
-  /* ========================================= */
-
-  function triggerGlitch() {
-
-    glitchFlash.classList.remove(
-      "flash"
-    );
-
-    void glitchFlash.offsetWidth;
-
-    glitchFlash.classList.add(
-      "flash"
-    );
-
-  }
-
-
-
-  /* ========================================= */
-  /* CHANGE SCREEN */
-  /* ========================================= */
-
-  function showScreen(
-    currentNumber,
-    nextNumber
-  ) {
-
-    screens[currentNumber]
-      .classList.remove(
-        "active"
-      );
-
-    screens[nextNumber]
-      .classList.add(
-        "active"
-      );
-
-    window.scrollTo(
-      0,
-      0
-    );
-
-  }
-
-
-
-  /* ========================================= */
-  /* CINEMATIC TRANSITION */
-  /* ========================================= */
-
-  function transitionTo(
-    currentNumber,
-    nextNumber,
-    title,
-    status
-  ) {
-
-    transitionTitle.innerText =
-      title;
-
-    transitionStatus.innerText =
-      status;
-
-    transitionBarFill.style.width =
-      "0%";
-
-    transitionOverlay.classList.add(
-      "active"
-    );
-
-
-    let progress =
-      0;
-
-
-    const loading =
-      setInterval(
-        function() {
-
-          progress += 5;
-
-          if (progress > 100) {
-
-            progress = 100;
-
-          }
-
-          transitionBarFill.style.width =
-            progress + "%";
-
-
-          if (progress >= 100) {
-
-            clearInterval(
-              loading
-            );
-
-          }
-
-        },
-        50
-      );
-
-
-    setTimeout(
-      triggerGlitch,
-      450
-    );
-
-
-    setTimeout(
-      function() {
-
-        showScreen(
-          currentNumber,
-          nextNumber
-        );
-
-      },
-      850
-    );
-
-
-    setTimeout(
-      function() {
-
-        transitionOverlay.classList.remove(
-          "active"
-        );
-
-        triggerGlitch();
-
-      },
-      1200
-    );
-
-  }
-
-
-
-  /* ========================================= */
-  /* OPENING -> MISSION 01 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "acceptButton"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          1,
-          2,
-          "MISSION 01",
-          "LOADING INITIAL ARCHIVE"
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* MISSION 01 -> SCANNING */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "scanButton"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          2,
-          3,
-          "ARCHIVE SEARCH",
-          "SCANNING MATCH DATA"
-        );
-
-
-        setTimeout(
-          startMission1Scan,
-          1250
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* MISSION 01 SCAN */
-  /* ========================================= */
-
-  function startMission1Scan() {
-
-    const bar =
-      document.getElementById(
-        "mission1LoadingBar"
-      );
-
-
-    bar.style.width =
-      "0%";
-
-
-    setTimeout(
-      function() {
-
-        bar.style.width =
-          "100%";
-
-      },
-      100
-    );
-
-
-    setTimeout(
-      function() {
-
-        transitionTo(
-          3,
-          4,
-          "MEMORY FOUND",
-          "RESTORING FIRST CONNECTION"
-        );
-
-      },
-      3000
-    );
-
-  }
-
-
-
-  /* ========================================= */
-  /* MEMORY -> ARCHIVE */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "memoryContinueButton"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          4,
-          5,
-          "ARCHIVE ACCESS",
-          "RECOVERING LOST FRAGMENTS"
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* ARCHIVE -> MISSION 02 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "archiveButton"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          5,
-          6,
-          "MISSION 02",
-          "INITIALIZING CONNECTION TRACE"
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* MISSION 02 -> DECRYPTION */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "beginTraceButton"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          6,
-          7,
-          "SECURE ACCESS",
-          "DECRYPTING CONNECTION ARCHIVE"
-        );
-
-
-        setTimeout(
-          startDecrypting,
-          1250
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* HACKER DECRYPTION */
-  /* ========================================= */
-
-  const hackerLines = [
-
-    "> INITIALIZING SECURE TRACE...",
-
-    "> AGENT HONEYBUN AUTHORIZED...",
-
-    "> ACCESSING CONNECTION ARCHIVE...",
-
-    "> BYPASSING CORRUPTED MEMORY SECTORS...",
-
-    "> SEARCHING PLAYER 2 SIGNAL...",
-
-    "> FRAGMENT 01 DETECTED...",
-
-    "> DECODING DISCORD COMMUNICATION LOGS...",
-
-    "> SEARCHING GAME SESSION RECORDS...",
-
-    "> LOVE SIGNAL DETECTED...",
-
-    "> FRAGMENT 02 RECOVERED...",
-
-    "> FRAGMENT 03 RECOVERED...",
-
-    "> RELATIONSHIP DATA FOUND...",
-
-    "> CONNECTION HISTORY VERIFIED...",
-
-    "> PLAYER 2 SIGNAL TRACE ACTIVE...",
-
-    "> ARCHIVE DECRYPTION COMPLETE."
-
-  ];
-
-
-  const hackerCharacters =
-
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>?/";
-
-
-  function randomCode(
-    length
-  ) {
-
-    let result =
-      "";
-
-
-    for (
-      let i = 0;
-      i < length;
-      i++
-    ) {
-
-      result +=
-        hackerCharacters.charAt(
-
-          Math.floor(
-
-            Math.random() *
-            hackerCharacters.length
-
-          )
-
-        );
-
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // The two white "mini game" images are storyboard placeholders only.
+    // They remain in the folder as references, but the player never sees them.
+    // scene22.jpg is replaced by Mini Game 1.
+    // scene24.jpg is replaced by Mini Game 2.
+    const STORY_SCENES = [
+      1,2,3,4,5,6,7,8,9,10,
+      11,12,13,14,15,16,17,18,19,20,21,
+      23,
+      25
+    ];
+
+    let storyIndex = 0;
+    let afterMiniGame1 = false;
+    let afterMiniGame2 = false;
+
+    const image = document.getElementById('storyImage');
+    const counter = document.getElementById('counter');
+    const nextBtn = document.getElementById('nextBtn');
+    const toast = document.getElementById('toast');
+
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function sceneSrc(n){ return `scene${pad(n)}.jpg`; }
+    function currentScene(){ return STORY_SCENES[storyIndex]; }
+
+    function sceneMode(n){
+      if ([19,20].includes(n)) return 'glitch-enter';
+      if ([10,21,23,25].includes(n)) return 'cinematic-enter';
+      return 'scene-enter';
     }
 
+    function renderScene(){
+      const n = currentScene();
+      image.className = '';
+      void image.offsetWidth;
+      image.src = sceneSrc(n);
+      image.classList.add(sceneMode(n));
+      counter.textContent = `${pad(storyIndex + 1)} / ${pad(STORY_SCENES.length)}`;
+      nextBtn.textContent = storyIndex === STORY_SCENES.length - 1 ? 'RESTART' : 'NEXT';
+    }
 
-    return result;
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),1800);
+    }
 
-  }
+    function goToSceneNumber(sceneNumber){
+      const idx = STORY_SCENES.indexOf(sceneNumber);
+      if (idx !== -1){
+        storyIndex = idx;
+        renderScene();
+      }
+    }
 
+    nextBtn.addEventListener('click', () => {
+      const n = currentScene();
 
+      if (storyIndex === STORY_SCENES.length - 1){
+        storyIndex = 0;
+        afterMiniGame1 = false;
+        afterMiniGame2 = false;
+        resetGame1();
+        resetGame2();
+        renderScene();
+        return;
+      }
 
-  function startDecrypting() {
+      // Mini Game 1 replaces storyboard placeholder scene22.jpg.
+      // The comic stays in your exact order: scene21 -> Mini Game 1 -> scene23.
+      if (n === 21 && !afterMiniGame1){
+        openGame1();
+        return;
+      }
 
-    const terminalText =
-      document.getElementById(
-        "terminalText"
+      // Mini Game 2 replaces storyboard instruction scene24.jpg.
+      // The comic stays in your exact order: scene23 -> Mini Game 2 -> scene25.
+      if (n === 23 && !afterMiniGame2){
+        openGame2();
+        return;
+      }
+
+      storyIndex++;
+      renderScene();
+    });
+
+    // ---------------- MINI GAME 1 ----------------
+    const game1Overlay = document.getElementById('game1Overlay');
+    const defuseTimer = document.getElementById('defuseTimer');
+    const defuseFill = document.getElementById('defuseFill');
+    const holdDefuse = document.getElementById('holdDefuse');
+    const defuseStatus = document.getElementById('defuseStatus');
+    const game1Success = document.getElementById('game1Success');
+    const retryDefuse = document.getElementById('retryDefuse');
+    const game1Continue = document.getElementById('game1Continue');
+
+    let countdownId = null;
+    let defuseId = null;
+    let timeLeft = 45;
+    let defuseProgress = 0;
+    let game1Complete = false;
+
+    function openGame1(){
+      resetGame1();
+      game1Overlay.classList.add('active');
+      startCountdown();
+    }
+
+    function startCountdown(){
+      clearInterval(countdownId);
+      countdownId = setInterval(()=>{
+        if (game1Complete) return;
+        timeLeft--;
+        defuseTimer.textContent = `00:${String(Math.max(timeLeft,0)).padStart(2,'0')}`;
+        if (timeLeft <= 0){
+          clearInterval(countdownId);
+          stopDefuse(true);
+          holdDefuse.style.display = 'none';
+          retryDefuse.style.display = 'inline-block';
+          defuseStatus.textContent = 'MISSION TIMER EXPIRED.';
+        }
+      },1000);
+    }
+
+    function beginDefuse(e){
+      e.preventDefault();
+      if (game1Complete || timeLeft <= 0) return;
+      clearInterval(defuseId);
+      defuseStatus.textContent = 'DEFUSING... DO NOT RELEASE.';
+      defuseId = setInterval(()=>{
+        defuseProgress += 2;
+        defuseFill.style.width = `${Math.min(defuseProgress,100)}%`;
+        if (defuseProgress >= 100){
+          clearInterval(defuseId);
+          game1Complete = true;
+          clearInterval(countdownId);
+          defuseStatus.textContent = 'DEFUSE COMPLETE.';
+          holdDefuse.style.display = 'none';
+          game1Success.classList.add('show');
+        }
+      },100);
+    }
+
+    function stopDefuse(forceReset=false){
+      clearInterval(defuseId);
+      if (!game1Complete){
+        defuseProgress = 0;
+        defuseFill.style.width = '0%';
+        if (!forceReset) defuseStatus.textContent = 'LINK BROKEN. HOLD AGAIN TO RESTART.';
+      }
+    }
+
+    holdDefuse.addEventListener('pointerdown', beginDefuse);
+    holdDefuse.addEventListener('pointerup', ()=>stopDefuse());
+    holdDefuse.addEventListener('pointerleave', ()=>stopDefuse());
+    holdDefuse.addEventListener('pointercancel', ()=>stopDefuse());
+
+    retryDefuse.addEventListener('click', ()=>{
+      resetGame1();
+      startCountdown();
+    });
+
+    game1Continue.addEventListener('click', ()=>{
+      game1Overlay.classList.remove('active');
+      afterMiniGame1 = true;
+      goToSceneNumber(23);
+      showToast('SPIKE DEFUSED // SEARCH LOCATION UNLOCKED');
+    });
+
+    function resetGame1(){
+      clearInterval(countdownId);
+      clearInterval(defuseId);
+      timeLeft = 45;
+      defuseProgress = 0;
+      game1Complete = false;
+      defuseTimer.textContent = '00:45';
+      defuseFill.style.width = '0%';
+      defuseStatus.textContent = 'DEFUSE LINK READY.';
+      holdDefuse.style.display = 'inline-block';
+      holdDefuse.disabled = false;
+      retryDefuse.style.display = 'none';
+      game1Success.classList.remove('show');
+    }
+
+    // ---------------- MINI GAME 2 ----------------
+    const game2Overlay = document.getElementById('game2Overlay');
+    const floorList = document.getElementById('floorList');
+    const storeGrid = document.getElementById('storeGrid');
+    const signalBox = document.getElementById('signalBox');
+    const signalMeter = document.getElementById('signalMeter');
+    const game2Success = document.getElementById('game2Success');
+    const game2Continue = document.getElementById('game2Continue');
+
+    // Floor-by-floor, store-by-store search exactly as described in your storyboard.
+    const floors = {
+      1:['Fashion Boutique','Toy & Figure Shop','Food Court','Arcade'],
+      2:['Beauty Store','Game Shop','Café','Accessories'],
+      3:['Clothing Store','Sweets Shop','Electronics','Gallery'],
+      4:['Luxury Wing','Endless Styles','Atrium ∞','Rooftop']
+    };
+
+    const targetFloor = 4;
+    const targetStore = 'Atrium ∞';
+    let currentFloor = 1;
+    let searched = new Set();
+
+    function openGame2(){
+      resetGame2();
+      game2Overlay.classList.add('active');
+      buildFloors();
+      selectFloor(1);
+    }
+
+    function buildFloors(){
+      floorList.innerHTML = '';
+      Object.keys(floors).forEach(f=>{
+        const b = document.createElement('button');
+        b.className = 'floor-btn';
+        b.textContent = `FLOOR ${f}`;
+        b.dataset.floor = f;
+        b.addEventListener('click',()=>selectFloor(Number(f)));
+        floorList.appendChild(b);
+      });
+    }
+
+    function selectFloor(f){
+      currentFloor = f;
+      [...floorList.children].forEach(b=>b.classList.toggle('active', Number(b.dataset.floor)===f));
+      storeGrid.innerHTML = '';
+      floors[f].forEach(name=>{
+        const card = document.createElement('div');
+        card.className = 'store-card';
+        const wasSearched = searched.has(`${f}:${name}`);
+        card.innerHTML = `<div class="store-name">${name}</div><div class="store-hint">${wasSearched ? 'SEARCHED' : 'SEARCH LOCATION'}</div>`;
+        if (wasSearched) card.style.opacity = '.58';
+        card.addEventListener('click',()=>searchStore(f,name,card));
+        storeGrid.appendChild(card);
+      });
+      updateSignalByFloor(f);
+    }
+
+    function meter(level){
+      [...signalMeter.children].forEach((s,i)=>s.classList.toggle('on', i < level));
+    }
+
+    function setSignalText(text){
+      // Preserve the meter element while replacing only the message text.
+      const nodes = [...signalBox.childNodes];
+      const textNode = nodes.find(n => n.nodeType === Node.TEXT_NODE);
+      if (textNode) textNode.textContent = text;
+    }
+
+    function updateSignalByFloor(f){
+      const diff = Math.abs(targetFloor - f);
+      const lvl = diff===0 ? 3 : diff===1 ? 2 : 1;
+      meter(lvl);
+      setSignalText(
+        diff===0 ? 'Signal is extremely strong on this floor. Search carefully.' :
+        diff===1 ? 'Signal strength increasing. You are getting closer.' :
+        'Signal weak. Keep searching the mall.'
       );
+    }
 
-    const decryptBar =
-      document.getElementById(
-        "decryptBar"
-      );
-
-    const decryptPercent =
-      document.getElementById(
-        "decryptPercent"
-      );
-
-
-    terminalText.innerHTML =
-      "";
-
-    decryptBar.style.width =
-      "0%";
-
-    decryptPercent.innerText =
-      "DECRYPTION // 0%";
-
-
-    let progress =
-      0;
-
-    let lineNumber =
-      0;
-
-
-    const interval =
-      setInterval(
-        function() {
-
-          progress += 4;
-
-
-          if (progress > 100) {
-
-            progress = 100;
-
-          }
-
-
-          decryptBar.style.width =
-            progress + "%";
-
-
-          decryptPercent.innerText =
-
-            "DECRYPTION // " +
-            progress +
-            "%";
-
-
-          if (
-            lineNumber <
-            hackerLines.length
-          ) {
-
-            const line =
-              document.createElement(
-                "div"
-              );
-
-
-            line.className =
-              "terminal-line";
-
-
-            line.innerHTML =
-
-              hackerLines[
-                lineNumber
-              ]
-
-              +
-
-              " <span style='color:#69737c'>"
-
-              +
-
-              randomCode(
-                Math.floor(
-                  Math.random() * 12
-                ) + 6
-              )
-
-              +
-
-              "</span>";
-
-
-            terminalText.appendChild(
-              line
-            );
-
-
-            lineNumber++;
-
-          }
-
-
-          if (
-            progress >= 100
-          ) {
-
-            clearInterval(
-              interval
-            );
-
-
-            setTimeout(
-              function() {
-
-                transitionTo(
-                  7,
-                  8,
-                  "FILE 01 RECOVERED",
-                  "OPENING CONNECTION ARCHIVE"
-                );
-
-              },
-              800
-            );
-
-          }
-
-        },
-        180
-      );
-
-  }
-
-
-
-  /* ========================================= */
-  /* FILE 01 -> FILE 02 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "file1Button"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          8,
-          9,
-          "FILE 02 RECOVERED",
-          "DECODING LOVE SIGNAL"
-        );
-
+    function searchStore(f,name,card){
+      const key = `${f}:${name}`;
+      if (searched.has(key)){
+        setSignalText('You already searched this location. Try somewhere else.');
+        return;
       }
-    );
 
+      searched.add(key);
+      card.style.opacity = '.58';
+      card.querySelector('.store-hint').textContent = 'SEARCHED';
 
-
-  /* ========================================= */
-  /* FILE 02 -> FILE 03 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "file2Button"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          9,
-          10,
-          "FILE 03 RECOVERED",
-          "VERIFYING RETURN SIGNAL"
-        );
-
+      if (f === targetFloor && name === targetStore){
+        meter(4);
+        setSignalText('DIRECT PLAYER 2 SIGNAL DETECTED.');
+        game2Success.classList.add('show');
+        [...storeGrid.children].forEach(c=>c.style.pointerEvents='none');
+        [...floorList.children].forEach(c=>c.disabled=true);
+        return;
       }
-    );
 
-
-
-  /* ========================================= */
-  /* FILE 03 -> FILE 04 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "file3Button"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          10,
-          11,
-          "FILE 04 RECOVERED",
-          "ANALYZING CONNECTION ACTIVITY"
-        );
-
+      if (f === targetFloor){
+        meter(3);
+        setSignalText('Very close... Player 2 is somewhere on this floor.');
+      } else if (Math.abs(targetFloor-f)===1){
+        meter(2);
+        setSignalText('Signal stronger. Search another floor or store.');
+      } else {
+        meter(1);
+        setSignalText('No direct signal here. Keep looking.');
       }
-    );
+    }
 
+    game2Continue.addEventListener('click', ()=>{
+      game2Overlay.classList.remove('active');
+      afterMiniGame2 = true;
+      goToSceneNumber(25);
+      showToast('PLAYER 2 FOUND // REUNION UNLOCKED');
+    });
 
+    function resetGame2(){
+      currentFloor = 1;
+      searched = new Set();
+      game2Success.classList.remove('show');
+      setSignalText('Select a floor and search a location.');
+      meter(0);
+      [...floorList.children].forEach(c=>c.disabled=false);
+    }
 
-  /* ========================================= */
-  /* FILE 04 -> FILE 05 */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "file4Button"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          11,
-          12,
-          "FINAL FILE RECOVERED",
-          "VERIFYING RELATIONSHIP STATUS"
-        );
-
-      }
-    );
-
-
-
-  /* ========================================= */
-  /* FILE 05 -> COMPLETE */
-  /* ========================================= */
-
-  document
-    .getElementById(
-      "file5Button"
-    )
-    .addEventListener(
-      "click",
-      function() {
-
-        transitionTo(
-          12,
-          13,
-          "TRACE COMPLETE",
-          "VERIFYING CONNECTION DATA"
-        );
-
-      }
-    );
-
-</script>
-
-
+    renderScene();
+  </script>
 </body>
-
 </html>
-    
